@@ -7,7 +7,7 @@ def attractions_data(data_path="taipei-attractions.json"):
     attractions = data["result"]["results"]
     attractions_data = []
     for i in range(0, len(attractions)):
-        attractions_data.append({
+        each_attraction_info = {
             "attrac_id":    attractions[i]["_id"],
             "name":         attractions[i]["name"],
             "category":     attractions[i]["CAT"],
@@ -16,42 +16,40 @@ def attractions_data(data_path="taipei-attractions.json"):
             "transport":    attractions[i]["direction"],
             "mrt":          attractions[i]["MRT"],
             "lat":          attractions[i]["latitude"],
-            "lng":          attractions[i]["longitude"],
-            "images":       re.match(r"https.+?\.(jpg|JPG|png|PNG)(?=(https|$))", attractions[i]["file"]).group(0)
-        })
-    # print(attractions_data)
+            "lng":          attractions[i]["longitude"]
+        }
+        each_attraction_file = attractions[i]["file"]
+        each_attraction_images = re.findall(r".+?[JPG|jpg](?=https|$)", each_attraction_file)
+        each_attraction_info["images"] = json.dumps(each_attraction_images)
+        attractions_data.append(each_attraction_info)
     return attractions_data
 
 def files_data(data_path="taipei-attractions.json"):
     with open(data_path, encoding="utf-8") as data_file:
         data = json.load(data_file)
     attractions = data["result"]["results"]
-    attractions_files_data = []
+    files_data = []
     for i in range(0, len(attractions)):
-        file_rawString = attractions[i]["file"]
-        file_path = re.findall(r"(https.+?)(?=https|$)", file_rawString)
-        file_extention = re.findall(r"\.([A-Za-z0-9]+?)(?=https|$)", file_rawString)
-        for path, ext in zip(file_path, file_extention):
+        each_file_rawString = attractions[i]["file"]
+        each_file_path = re.findall(r"(https.+?)(?=https|$)", each_file_rawString)
+        each_file_extention = re.findall(r"\.([A-Za-z0-9]+?)(?=https|$)", each_file_rawString)
+        for path, ext in zip(each_file_path, each_file_extention):
             if str(ext).lower()=="jpg":
-                file_type = "image"
+                each_file_type = "image"
             elif str(ext).lower()=="mp3":
-                file_type = "audio"
+                each_file_type = "audio"
             elif str(ext).lower()=="flv":
-                file_type = "video"
+                each_file_type = "video"
             else:
-                file_type = "undefined"
-            attractions_files_data.append({
+                each_file_type = "undefined"
+            files_data.append({
                 "attrac_id": attractions[i]["_id"],
                 "link_path": path,
                 "extention": ext,
-                "type": file_type
+                "type": each_file_type
             })
-    # print(attractions_files_data)
-    return attractions_files_data
-
-data = attractions_data()
-print(data[2]["lat"])
-
+    return files_data
+    
 # """
 # i,  [json_dic_name],[note],                                     [DB_column_name]
 # 1,  rate,           rating score from 1 to 5,                   x

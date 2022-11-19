@@ -22,23 +22,34 @@ def thankyou():
 
 # APIs
 @app.route("/api/attractions")
-def getAttractions():
-	page = int(request.args.get("page"))
-	keyword = str(request.args.get("keyword"))
-	result = sql.getAttractions(page=page, keyword=keyword)
-	return jsonify(result)
+def get_attractions():
+	try:
+		page = request.args.get("page")
+		keyword = request.args.get("keyword")
+		if keyword == None or "":
+			print("get_attractions")
+			data = sql.get_attractions(page=page)
+		else:
+			print("get_attractions_with_keyword")
+			data = sql.get_attractions_with_keyword(page=page, keyword=keyword)
+		return jsonify(data)
+	except:
+		return jsonify({"error": True, "message": "請重新輸入。"})	
 
 @app.route("/api/attraction/<attractionID>")
-def getAttractionWithID(attractionID):
-	result = sql.getAttractionWithID(attractionID)
-	return jsonify(result)
-	# return jsonify({"error": True, "message": attractionID})
+def get_attraction_with_ID(attractionID):
+	try:
+		data = sql.get_attraction_with_ID(attractionID)
+		return jsonify(data)
+	except:
+		message = "請按照情境提供對應的錯誤訊息"
+		return jsonify({"error": True, "message": message})
 
 @app.route("/api/categories")
-def getCategories():
+def get_categories():
 	try: 
-		categories = ["string"]
-		return jsonify({"data:": categories})
+		data = sql.get_categories()
+		return jsonify(data)
 	except:
 		message = "請按照情境提供對應的錯誤訊息"
 		return jsonify({"error": True, "message": message})
