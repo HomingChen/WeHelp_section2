@@ -1,6 +1,7 @@
 import json
 from flask import *
 import sql
+
 app=Flask(__name__)
 app.config["JSON_AS_ASCII"]=False
 app.config["TEMPLATES_AUTO_RELOAD"]=True
@@ -34,7 +35,7 @@ def get_attractions():
 			data = sql.get_attractions_with_keyword(page=page, keyword=keyword)
 		return jsonify(data)
 	except:
-		return jsonify({"error": True, "message": "請重新輸入。"})	
+		app.register_error_handler(e)
 
 @app.route("/api/attraction/<attractionID>")
 def get_attraction_with_ID(attractionID):
@@ -42,16 +43,25 @@ def get_attraction_with_ID(attractionID):
 		data = sql.get_attraction_with_ID(attractionID)
 		return jsonify(data)
 	except:
-		message = "請按照情境提供對應的錯誤訊息"
-		return jsonify({"error": True, "message": message})
+		app.register_error_handler()
 
 @app.route("/api/categories")
 def get_categories():
 	try: 
 		data = sql.get_categories()
 		return jsonify(data)
-	except:
-		message = "請按照情境提供對應的錯誤訊息"
-		return jsonify({"error": True, "message": message})
+	except err:
+		app.register_error_handler()
 
-app.run(port=3000)
+# error
+@app.errorhandler(404)
+def bad_request(e):
+	message = "景點編號不正確"
+	return jsonify({"error": True, "message": message}), 404
+
+@app.errorhandler(500)
+def server_error(e):
+	message = "內部伺服器錯誤"
+	return jsonify({"error": True, "message": message}), 500
+
+app.run(host="0.0.0.0", port=3000)

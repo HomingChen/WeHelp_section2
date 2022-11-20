@@ -59,18 +59,19 @@ def get_attractions_with_keyword(page, keyword):
         return error_message("請重新輸入頁數。")
 
 def get_attraction_with_ID(id):
-    try:
-        query = "SELECT * FROM attractions WHERE attrac_id=%(id)s"
-        cursor.execute(query, params={"id": id})
-        result = cursor.fetchone()
-        data = namedtuple("data", cursor.column_names)._make(result)._asdict()
-        data["images"] = ast.literal_eval(data["images"])
-        return {"data": data}
-    except:
-        return error_message("請輸入景點編號。")
+    query = "SELECT * FROM attractions WHERE attrac_id=%(id)s"
+    cursor.execute(query, params={"id": id})
+    result = cursor.fetchone()
+    data = namedtuple("data", cursor.column_names)._make(result)._asdict()
+    data["images"] = ast.literal_eval(data["images"])
+    return {"data": data}
+
 
 def get_categories():
-    query = "SELECT GROUP_CONCAT(DISTINCT category ORDER BY category DESC) FROM attractions;"
-    cursor.execute(query)
-    data = list(cursor.fetchone())
-    return {"data": data}
+    try:
+        query = "SELECT GROUP_CONCAT(DISTINCT category ORDER BY category DESC) FROM attractions;"
+        cursor.execute(query)
+        data = list(cursor.fetchone())
+        return {"data": data}
+    except:
+        return error_message("請重新操作。")

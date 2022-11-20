@@ -13,7 +13,7 @@ try:
     cursor.execute("USE {};".format(DB_name))
     print("Successfully connects to MySQL DB: {}.".format(DB_name))
 except mysql.connector.Error as err: 
-    if err.errno == mysql.connector.errors:
+    if err.errno == 1049:
         cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8';".format(DB_name))
         cnx.database = "taipei_attractions"
         print("A new MySQL DB '{}' is created and connected successfully.".format(DB_name))
