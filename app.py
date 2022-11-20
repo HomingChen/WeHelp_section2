@@ -35,7 +35,7 @@ def get_attractions():
 			data = sql.get_attractions_with_keyword(page=page, keyword=keyword)
 		return jsonify(data)
 	except:
-		app.register_error_handler(e)
+		app.register_error_handler()
 
 @app.route("/api/attraction/<attractionID>")
 def get_attraction_with_ID(attractionID):
@@ -50,7 +50,7 @@ def get_categories():
 	try: 
 		data = sql.get_categories()
 		return jsonify(data)
-	except err:
+	except:
 		app.register_error_handler()
 
 # error
