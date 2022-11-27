@@ -59,6 +59,7 @@
                 ).then(function(response){
                     return response.json();
                 }).then(function(data){
+                    requestData.page = data["nextPage"];
                     let footerTab = document.getElementById("footer");
                     let mainContentTab = document.createElement("div");              // 建立新的mainContent以利搜尋新的景點時，把舊結果移除
                     mainContentTab.setAttribute("class", "attracList");
@@ -71,22 +72,32 @@
                         let category = data["data"][i]["category"];
                         renderAttracList(image, attrac, mrt, category);              // 將資料畫入頁面中
                     };
-                    requestData.page = data["nextPage"];                                        // 更新索取的景點資料，以利判斷是否需要繼續載入
-                    observer.observe(document.querySelector("figure:nth-last-child(5)"));    // 當畫面出現第五張圖片時，啟用載入下一頁景點資料流程
+                    debounce(observer.observe(document.querySelector("figure:nth-last-child(5)")), 3000);    // 當畫面出現第五張圖片時，啟用載入下一頁景點資料流程
                 });
             };
         };
-
+        // 防止過度載入
+        const debounce = (func, delay)=>{
+        var timer = null;
+        return function () {
+            var context = this;
+            var args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+            func.apply(context, args)
+            }, delay);
+        }
+        };
         // 載入下一頁景點資料流程
         const observer = new IntersectionObserver(
-            function(entries, observer){
-                if(entries[0].isIntersecting){                                                  // 當偵測物件(第五張圖片)出現時，啟動以下流程
-                    getData(requestData);                                                       // 載入新一頁的景點，若沒有新的一頁，則不做任何事情
-                    observer.unobserve(entries[0].target);                                      // 註銷原本舊的第五張圖片
+            function(entries, observer){   
+                if(entries[0].isIntersecting){                                               // 當偵測物件(第五張圖片)出現時，啟動以下流程                                                 
+                    observer.unobserve(entries[0].target);                                   // 註銷原本舊的第五張圖片
+                    debounce(getData(requestData), 3000);                                  // 載入新一頁的景點，若沒有新的一頁，則不做任何事情
                     observer.observe(document.querySelector("figure:nth-last-child(5)"));    // 改以新的第五張圖片為偵測物件
                 }
             },
-            {root: document.querySelector("figure:nth-last-child(5)")}                       // 改以新的第五張圖片為偵測物件
+            {root: document.querySelector("figure:nth-last-child(5)"), threshold: 1}                       // 改以新的第五張圖片為偵測物件
         );
 
         // 將景點資料畫入頁面中
