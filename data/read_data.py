@@ -7,7 +7,7 @@ def attractions_data(data_path="taipei-attractions.json"):
     attractions = data["result"]["results"]
     attractions_data = []
     for i in range(0, len(attractions)):
-        each_attraction_info = {
+        attractions_data.append({
             "attrac_id":    attractions[i]["_id"],
             "name":         attractions[i]["name"],
             "category":     attractions[i]["CAT"],
@@ -17,11 +17,7 @@ def attractions_data(data_path="taipei-attractions.json"):
             "mrt":          attractions[i]["MRT"],
             "lat":          attractions[i]["latitude"],
             "lng":          attractions[i]["longitude"]
-        }
-        each_attraction_file = attractions[i]["file"]
-        each_attraction_images = re.findall(r".+?[JPG|jpg](?=https|$)", each_attraction_file)
-        each_attraction_info["images"] = json.dumps(each_attraction_images)
-        attractions_data.append(each_attraction_info)
+        })
     return attractions_data
 
 def files_data(data_path="taipei-attractions.json"):
@@ -44,13 +40,26 @@ def files_data(data_path="taipei-attractions.json"):
                 each_file_type = "undefined"
             files_data.append({
                 "attrac_id": attractions[i]["_id"],
-                "link_path": path,
+                "type": each_file_type,
                 "extention": ext,
-                "type": each_file_type
+                "path": path
             })
     return files_data
-    
-# """
+
+def category_data(data_path="taipei-attractions.json"):
+    with open(data_path, encoding="utf-8") as data_file:
+        data = json.load(data_file)
+    attractions = data["result"]["results"]
+    category_list = []
+    for i in range(0, len(attractions)):
+        each_attraction_cat = attractions[i]["CAT"]
+        category_list.append(each_attraction_cat)
+    category_data = list(dict.fromkeys(category_list))
+    return category_data
+
+
+
+# """ columns infromation about taipei-attractions.json and mapping for MySQL DB column name
 # i,  [json_dic_name],[note],                                     [DB_column_name]
 # 1,  rate,           rating score from 1 to 5,                   x
 # 2,  direction,      direction,                                  transport
@@ -73,4 +82,29 @@ def files_data(data_path="taipei-attractions.json"):
 # 19, _id,            the same as id (strating from 1 to 58),     id
 # 20, avEnd,          not defined date,                           x
 # 21, address,        address,                                    address
+# """
+
+# """ data without data normalization as api offered
+# def attractions_data(data_path="taipei-attractions.json"):
+#     with open(data_path, encoding="utf-8") as data_file:
+#         data = json.load(data_file)
+#     attractions = data["result"]["results"]
+#     attractions_data = []
+#     for i in range(0, len(attractions)):
+#         each_attraction_info = {
+#             "attrac_id":    attractions[i]["_id"],
+#             "name":         attractions[i]["name"],
+#             "category":     attractions[i]["CAT"],
+#             "description":  attractions[i]["description"],
+#             "address":      attractions[i]["address"],
+#             "transport":    attractions[i]["direction"],
+#             "mrt":          attractions[i]["MRT"],
+#             "lat":          attractions[i]["latitude"],
+#             "lng":          attractions[i]["longitude"]
+#         }
+#         each_attraction_file = attractions[i]["file"]                                           # this section is the mainly different part:
+#         each_attraction_images = re.findall(r".+?[JPG|jpg](?=https|$)", each_attraction_file)   # just take the extention is "jpg" or "JPG" path
+#         each_attraction_info["images"] = json.dumps(each_attraction_images)                     # combine as a json array
+#         attractions_data.append(each_attraction_info)                                           # append to the attraction so that each attraction will have a array of image from file
+#     return attractions_data
 # """
