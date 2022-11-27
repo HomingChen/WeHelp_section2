@@ -98,7 +98,7 @@
                         observer.unobserve(entries[0].target);
                         observer.observe(document.querySelector("figure:nth-last-child(-n+4)"));
                     }
-                },100),{root: document.querySelector("figure:nth-last-child(-n+4)"), threshold: 0});
+                },750),{root: document.querySelector("figure:nth-last-child(-n+4)"), threshold: 0});
 
         // 將景點資料畫入頁面中
         const renderAttracList = (image, attrac, mrt, category)=>{
