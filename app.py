@@ -24,7 +24,7 @@ def thankyou():
 # APIs
 @app.route("/api/attractions")
 def get_attractions():
-	try:
+	# try:
 		page = request.args.get("page")
 		keyword = request.args.get("keyword")
 		if keyword == None or "":
@@ -34,8 +34,8 @@ def get_attractions():
 			print("get_attractions_with_keyword")
 			data = sql.get_attractions_with_keyword(page=page, keyword=keyword)
 		return jsonify(data)
-	except:
-		app.register_error_handler()
+	# except:
+	# 	app.register_error_handler()
 
 @app.route("/api/attraction/<attractionID>")
 def get_attraction_with_ID(attractionID):
@@ -47,11 +47,11 @@ def get_attraction_with_ID(attractionID):
 
 @app.route("/api/categories")
 def get_categories():
-	try: 
+	# try: 
 		data = sql.get_categories()
 		return jsonify(data)
-	except:
-		app.register_error_handler()
+	# except:
+	# 	app.register_error_handler()
 
 # error
 @app.errorhandler(404)
