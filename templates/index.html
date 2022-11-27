@@ -72,7 +72,7 @@
                         renderAttracList(image, attrac, mrt, category);              // 將資料畫入頁面中
                     };
                     requestData.page = data["nextPage"];                                        // 更新索取的景點資料，以利判斷是否需要繼續載入
-                    observer.observe(document.querySelector("figure:nth-last-child(-n+4)"));    // 當畫面出現倒數四張圖片時，啟用載入下一頁景點資料流程
+                    observer.observe(document.querySelector("figure:nth-last-child(5)"));    // 當畫面出現第五張圖片時，啟用載入下一頁景點資料流程
                 });
             };
         };
@@ -80,13 +80,13 @@
         // 載入下一頁景點資料流程
         const observer = new IntersectionObserver(
             function(entries, observer){
-                if(entries[0].isIntersecting){                                                  // 當偵測物件(倒數四張圖片)出現時，啟動以下流程
+                if(entries[0].isIntersecting){                                                  // 當偵測物件(第五張圖片)出現時，啟動以下流程
                     getData(requestData);                                                       // 載入新一頁的景點，若沒有新的一頁，則不做任何事情
-                    observer.unobserve(entries[0].target);                                      // 註銷原本舊的倒數四張圖片
-                    observer.observe(document.querySelector("figure:nth-last-child(-n+4)"));    // 改以新的倒數四張圖片為偵測物件
+                    observer.unobserve(entries[0].target);                                      // 註銷原本舊的第五張圖片
+                    observer.observe(document.querySelector("figure:nth-last-child(5)"));    // 改以新的第五張圖片為偵測物件
                 }
             },
-            {root: document.querySelector("figure:nth-last-child(-n+4)")}                       // 改以新的倒數四張圖片為偵測物件
+            {root: document.querySelector("figure:nth-last-child(5)")}                       // 改以新的第五張圖片為偵測物件
         );
 
         // 將景點資料畫入頁面中
