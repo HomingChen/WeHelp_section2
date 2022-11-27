@@ -48,34 +48,6 @@
             };
             return url;
         };
-
-        // 索取景點資料
-        const getData = (requestData)=>{
-            let url = requestURL(requestData);
-            if(url==null){    // 如果此頁為空值，則不再載入資料
-                void(0);
-            }else{            // 如果此頁非空值，則繼續索取資料
-                fetch(url, {"method": "GET"}
-                ).then(function(response){
-                    return response.json();
-                }).then(function(data){
-                    requestData.page = data["nextPage"];
-                    let footerTab = document.getElementById("footer");
-                    let mainContentTab = document.createElement("div");              // 建立新的mainContent以利搜尋新的景點時，把舊結果移除
-                    mainContentTab.setAttribute("class", "attracList");
-                    mainContentTab.setAttribute("id", "mainContent");
-                    footerTab.parentNode.insertBefore(mainContentTab, footerTab);    // 將mainContent的標籤嵌入於footer之上
-                    for(let i=0; i<data["data"].length; i++){                        // 針對收到的回應，抓取圖片、景點名稱、捷運與類別資料
-                        let image = data["data"][i]["images"][0];
-                        let attrac = data["data"][i]["name"];
-                        let mrt = data["data"][i]["mrt"];
-                        let category = data["data"][i]["category"];
-                        renderAttracList(image, attrac, mrt, category);              // 將資料畫入頁面中
-                    };
-                    debounce(observer.observe(document.querySelector("figure:nth-last-child(5)")), 3000);    // 當畫面出現第五張圖片時，啟用載入下一頁景點資料流程
-                });
-            };
-        };
         // 防止過度載入
         const debounce = (func, delay)=>{
         var timer = null;
@@ -88,17 +60,45 @@
             }, delay);
         }
         };
+        // 索取景點資料
+        const getData = (requestData)=>{
+            let url = requestURL(requestData);
+            if(url==null){    // 如果此頁為空值，則不再載入資料
+                void(0);
+            }else{            // 如果此頁非空值，則繼續索取資料
+                fetch(url, {"method": "GET"}
+                ).then(function(response){
+                    return response.json();
+                }).then(function(data){
+                    requestData.page = data["nextPage"];
+                    requestData.nextPage = data["nextPage"];
+                    let footerTab = document.getElementById("footer");
+                    let mainContentTab = document.createElement("div");              // 建立新的mainContent以利搜尋新的景點時，把舊結果移除
+                    mainContentTab.setAttribute("class", "attracList");
+                    mainContentTab.setAttribute("id", "mainContent");
+                    footerTab.parentNode.insertBefore(mainContentTab, footerTab);    // 將mainContent的標籤嵌入於footer之上
+                    for(let i=0; i<data["data"].length; i++){                        // 針對收到的回應，抓取圖片、景點名稱、捷運與類別資料
+                        let image = data["data"][i]["images"][0];
+                        let attrac = data["data"][i]["name"];
+                        let mrt = data["data"][i]["mrt"];
+                        let category = data["data"][i]["category"];
+                        renderAttracList(image, attrac, mrt, category);              // 將資料畫入頁面中
+                    };
+                    observer.observe(document.querySelector("figure:nth-last-child(-n+4)"));
+                });
+            };
+        };
+
         // 載入下一頁景點資料流程
         const observer = new IntersectionObserver(
-            function(entries, observer){   
-                if(entries[0].isIntersecting){                                               // 當偵測物件(第五張圖片)出現時，啟動以下流程                                                 
-                    observer.unobserve(entries[0].target);                                   // 註銷原本舊的第五張圖片
-                    debounce(getData(requestData), 3000);                                  // 載入新一頁的景點，若沒有新的一頁，則不做任何事情
-                    observer.observe(document.querySelector("figure:nth-last-child(5)"));    // 改以新的第五張圖片為偵測物件
-                }
-            },
-            {root: document.querySelector("figure:nth-last-child(5)"), threshold: 1}                       // 改以新的第五張圖片為偵測物件
-        );
+            debounce(
+                function(entries, observer){
+                    if(entries[0].isIntersecting){
+                        getData(requestData);
+                        observer.unobserve(entries[0].target);
+                        observer.observe(document.querySelector("figure:nth-last-child(-n+4)"));
+                    }
+                },100),{root: document.querySelector("figure:nth-last-child(-n+4)"), threshold: 0});
 
         // 將景點資料畫入頁面中
         const renderAttracList = (image, attrac, mrt, category)=>{
