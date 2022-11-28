@@ -3,7 +3,7 @@
     grid-template-columns: 1fr 1200px 1fr;
     grid-template-rows: 54px 320px 1fr 104px;
     grid-template-areas: 
-        ". navibar ."
+        "navibar navibar navibar"
         "heroSection heroSection heroSection"
         ". attracList ."
         "footer footer footer";
@@ -14,7 +14,7 @@
     grid-template-columns: 1fr 1200px 1fr;
     grid-template-rows: 54px 480px 442px 104px;
     grid-template-areas: 
-        ". navibar ."
+        "navibar navibar navibar"
         ". attracDetail ."
         ". attracDetail ."
         "footer footer footer";
@@ -22,9 +22,9 @@
 nav{
     grid-area: navibar;
     display: grid;
-    grid-template-columns: 150px 875px 84px 91px;
+    grid-template-columns: 1fr 150px 875px 84px 91px 1fr;
     grid-template-areas: 
-        "navTitle . navBook navLogin";
+        ". navTitle . navBook navLogin .";
     align-items: center;
 }
 .navTitle{
@@ -304,6 +304,8 @@ footer > span{
         grid-area: navibar;
         display: grid;
         grid-template-columns: 150px 1fr 84px 91px;
+        grid-template-areas: 
+            "navTitle . navBook navLogin";
         padding: 10px;
     }
     .heroSection{
@@ -360,7 +362,9 @@ footer > span{
     nav{
         grid-area: navibar;
         display: grid;
-        grid-template-columns: 150px 25px 84px 91px;
+        grid-template-columns: 150px 1fr 84px 91px;
+        grid-template-areas: 
+            "navTitle . navBook navLogin";
         padding: 10px;
     }
     .heroSection{
@@ -368,8 +372,8 @@ footer > span{
         display: grid;
         grid-template-columns: 1fr 320px 1fr;
         grid-template-rows: 86px 41px 15px 22px 25px 46px 85px;
-        background-image: url("welcome_mobile.svg");
-        background-size: 360px 320px;
+        background-image: url("welcome_desktop.svg");
+        background-size: auto 320px;
     }
     form{
         grid-template-columns: 225px 60px;
@@ -405,5 +409,10 @@ footer > span{
     }
     figure > div{
         grid-template-columns: 150px 150px;
+    }
+}
+@media (max-width:360px){
+    .heroSection{
+        background-image: url("welcome_mobile.svg");
     }
 }
