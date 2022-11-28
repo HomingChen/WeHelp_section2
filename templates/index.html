@@ -52,10 +52,10 @@
         const getData = (requestData)=>{
             let url = requestURL(requestData);
             if(requestData.onLoading==true){
-                console.log("already fetched.");
+                return `Request for page=${requestData.page} had already been fetched.`;
             }else{
                 if(url==null){    // 如果此頁為空值，則不再載入資料
-                    void(0);
+                    return "The request URL is null";
                 }else{            // 如果此頁非空值，則繼續索取資料
                     requestData.onLoading = true;
                     fetch(url, {"method": "GET"}
@@ -64,7 +64,6 @@
                     }).then(function(data){
                         requestData.page = data["nextPage"];
                         requestData.onLoading = false;
-                        console.log("Loading is done.");
                         let footerTab = document.getElementById("footer");
                         let mainContentTab = document.createElement("div");              // 建立新的mainContent以利搜尋新的景點時，把舊結果移除
                         mainContentTab.setAttribute("class", "attracList");
@@ -159,18 +158,16 @@
         const requestBtm = (requestData)=>{
             let inputKeyword = document.getElementById("searchbar").value;
             if(inputKeyword==requestData.keyword){
-                console.log("input keyword: (the same as the last keyword => do nothing)")
-                void(0);
+                return "input keyword: (the same as the last keyword => do nothing)"
             }else if(typeof(inputKeyword)=="string" && inputKeyword.trim().length>0 && inputKeyword.trim().length<=100){
-                console.log("input keyword: "+inputKeyword);
                 let mainContentTab = document.getElementById("mainContent");
                 mainContentTab.remove();
                 requestData.page = 0;
                 requestData.keyword = inputKeyword;
                 getData(requestData);
+                return `input keyword: ${inputKeyword}`;
             }else{
-                console.log("input keyword: (not a qualififed input => do nothing)");
-                void(0);
+                return "input keyword: (not a qualififed input => do nothing)";
             };
         };
 
