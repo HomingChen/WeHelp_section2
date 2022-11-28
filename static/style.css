@@ -293,7 +293,64 @@ footer > span{
     line-height: 13px;
     color: #FFFFFF;
 }
-@media (max-width:600px){
+@media (max-width:1200px){
+    .indexBody{
+        display: grid;
+        grid-template-columns: 1fr 700px 1fr;
+        grid-template-rows: 54px 320px 1fr 104px;
+        margin: 0px;
+    }
+    nav{
+        grid-area: navibar;
+        display: grid;
+        grid-template-columns: 150px 1fr 84px 91px;
+        padding: 10px;
+    }
+    .heroSection{
+        grid-area: heroSection;
+        display: grid;
+        grid-template-columns: 1fr 694px 1fr;
+        grid-template-rows: 86px 41px 15px 22px 25px 46px 85px;
+        background-image: url("welcome_desktop.svg");
+        background-size: auto 320px;
+    }
+    form{
+        grid-template-columns: 225px 60px;
+    }
+    .categoryList{
+        width: 320px;
+        height: 160px;
+        grid-template-columns: repeat(3, 96px);
+        grid-template-rows: repeat(4, 40px);
+    }
+    .attracList{
+        grid-area: attracList;
+        display: grid;
+        grid-template-columns: repeat(2, 322px);
+        grid-row: repeat(6, 280px);
+        gap: 30px;
+        padding: 40px 13px 40px 13px;
+    }
+    figure{
+        grid-area: auto;
+        display: grid;
+        grid-template-rows: 195px 40px 45px;
+        width: 322px;
+        height: 280px;
+        border-radius: 5px;
+    }
+    figure > img{
+        width: 322px;
+        height: 235px;
+        border-radius: 4px 4px 0 0;
+        background-color: #757575;
+        object-fit: cover;
+    }
+    figure > div{
+        grid-template-columns: 150px 150px;
+    }
+}
+@media (max-width:700px){
     .indexBody{
         display: grid;
         grid-template-columns: 1fr 360px 1fr;
@@ -327,7 +384,7 @@ footer > span{
         grid-area: attracList;
         display: grid;
         grid-template-columns: 322px;
-        grid-row: repeat(12, 280px);
+        grid-row: repeat(2, 280px);
         gap: 15px;
         padding: 40px 19px 40px 19px;
     }
