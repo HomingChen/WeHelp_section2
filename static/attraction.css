@@ -38,6 +38,7 @@
     height: 406px;
     width: 540px;
     object-fit: cover;
+    border-radius: 5px;
 }
 .guidanceBooking > figure > button#previousImg{
     grid-area: previousImg;
@@ -431,6 +432,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         left: 0px;
         height: 350px;
         width: max(100%, 360px);
+        border-radius: 0px;
     }
     .guidanceBooking > div{
         grid-template-columns: 340px;
