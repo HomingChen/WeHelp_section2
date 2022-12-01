@@ -70,7 +70,7 @@ create_files_table = textwrap.dedent("""\
         type           ENUM('image', 'audio', 'video', 'undefined') NOT NULL,
         extention      VARCHAR(10) NOT NULL,
         path           VARCHAR(500) UNIQUE NOT NULL ,
-        FOREIGN KEY(attrac_id) REFERENCES attractions(attrac_id), 
+        FOREIGN KEY(attrac_id) REFERENCES attractions(id), 
         INDEX indexes(attrac_id, type, extention)
     ) ENGINE=InnoDB;""")
 try:
