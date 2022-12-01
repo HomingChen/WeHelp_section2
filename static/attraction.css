@@ -13,7 +13,7 @@
     grid-template-columns: 570px 630px;
     grid-template-rows: 480px;
     grid-template-areas: "figure booking";
-    border-bottom: 1px solid #757577;
+    border-bottom: 1px solid #E8E8E8;
 }
 .guidanceBooking > figure{
     grid-area: figure;
