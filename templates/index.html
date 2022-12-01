@@ -25,7 +25,7 @@
             <span class="heroSubtitle">探索每個角落，體驗城市的深度旅遊行程</span>
             <form>
                 <input class="searchbar" id="searchbar" type="text" placeholder="輸入景點名稱查詢"/>
-                <button class="searchBtm" id="searchBtm"></button>
+                <button class="searchBtm" id="searchBtm" type="button"></button>
                 <div class="categoryList" id="categoryList" style="display: none;">
                     <!-- 以下向後端索取類別(category)資料、並產生對應內容 -->
                 </div>
@@ -168,8 +168,8 @@
             if(inputKeyword==requestData.keyword){
                 return "input keyword: (the same as the last keyword => do nothing)"
             }else if(typeof(inputKeyword)=="string" && inputKeyword.trim().length>0 && inputKeyword.trim().length<=100){
-                // let mainContentTab = document.getElementById("mainContent");
-                // mainContentTab.remove();
+                let attracListTab = document.getElementById("attracList");
+                attracListTab.remove();
                 requestData.page = 0;
                 requestData.keyword = inputKeyword;
                 getData(requestData);
@@ -188,7 +188,6 @@
         const inputTab = document.getElementById("searchbar");
         const categoryListTab = document.getElementById("categoryList");
         
-
         // 點擊時所觸發的動作
         window.addEventListener("click", function(event){
             // event.preventDefault();
