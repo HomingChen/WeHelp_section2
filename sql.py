@@ -13,14 +13,14 @@ def get_attractions(page):
     query = textwrap.dedent("""
         SELECT filtered_attractions.*, filtered_files.images
             FROM 
-                (SELECT * FROM attractions ORDER BY attrac_id LIMIT %(start_row)s, 13
+                (SELECT * FROM attractions ORDER BY id LIMIT %(start_row)s, 13
                 ) AS filtered_attractions 
             LEFT JOIN 
                 (SELECT attrac_id, JSON_ARRAYAGG(path) AS images 
                     FROM files WHERE type='image' 
                     GROUP BY attrac_id
                 ) AS filtered_files 
-            ON filtered_files.attrac_id=filtered_attractions.attrac_id;
+            ON filtered_files.attrac_id=filtered_attractions.id;
         """)
     cursor.execute(query, params={"start_row": start_row})
     data = []
@@ -55,7 +55,7 @@ def get_attractions_with_keyword(page, keyword):
                     FROM files WHERE type='image' 
                     GROUP BY attrac_id
                 ) AS filtered_files 
-            ON filtered_files.attrac_id=filtered_attractions.attrac_id;
+            ON filtered_files.attrac_id=filtered_attractions.id;
         """)
     cursor.execute(query, params={"keyword": keyword, "keyword_like": "%"+keyword+"%", "start_row": start_row})
     data = []
@@ -73,8 +73,8 @@ def get_attraction_with_ID(id):
     cursor = cnx.cursor()
     query = textwrap.dedent("""
         SELECT attractions.*, JSON_ARRAYAGG(files.path) AS images 
-        FROM attractions LEFT JOIN files ON attractions.attrac_id=files.attrac_id 
-        WHERE attractions.attrac_id=%(id)s AND files.type='image'; 
+        FROM attractions LEFT JOIN files ON attractions.id=files.attrac_id 
+        WHERE attractions.id=%(id)s AND files.type='image'; 
         """)
     cursor.execute(query, params={"id": id})
     result = cursor.fetchone()
@@ -102,7 +102,7 @@ def get_categories():
 # 
 # def get_attractions(page):
 #     strat_row = int(page)*12
-#     query = "SELECT * FROM attractions ORDER BY attrac_id LIMIT %(start_row)s,12;"
+#     query = "SELECT * FROM attractions ORDER BY id LIMIT %(start_row)s,12;"
 #     cursor.execute(query, params={"start_row": strat_row})
 #     data = []
 #     for i in cursor.fetchall():
@@ -134,7 +134,7 @@ def get_categories():
 #     return {"nextPage": next_page, "data": data}
 # 
 # def get_attraction_with_ID(id):
-#     query = "SELECT * FROM attractions WHERE attrac_id=%(id)s"
+#     query = "SELECT * FROM attractions WHERE id=%(id)s"
 #     cursor.execute(query, params={"id": id})
 #     result = cursor.fetchone()
 #     data = namedtuple("data", cursor.column_names)._make(result)._asdict()
