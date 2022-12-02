@@ -152,6 +152,9 @@ figure > a > img{
     background-color: #757575;
     object-fit: cover;
 }
+figure > a > img:hover{
+    opacity: 0.7;
+}
 figure > figcaption{
     display: grid;
     grid-row: 2/3;

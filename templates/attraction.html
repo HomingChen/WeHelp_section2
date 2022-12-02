@@ -22,7 +22,8 @@
     <div class="mainContent">
         <div class="guidanceBooking">
             <figure id="images">
-                <img id="currentImg" src="" alt=""/>
+                <img id="lastImg" src="" alt="0">
+                <img id="currentImg" src="" alt="0"/>
                 <button id="previousImg"></button>
                 <button id="nextImg"></button>
                 <div id="imgList">
@@ -100,7 +101,15 @@
         };
         const updateCurrentImg = (i)=>{
             let currentImgTab = document.getElementById("currentImg");
-            figureTab.replaceChild(imgList[i], currentImgTab);
+            // 把目前圖片更新為前一張圖片
+            let lastImgTab = document.getElementById("lastImg");
+            let lastImgID = currentImgTab.alt;
+            lastImgTab.setAttribute("alt", lastImgID);
+            lastImgTab.setAttribute("src", imgList[lastImgID].src);
+            // 把下一張圖片更新為目前的圖片
+            currentImgTab.replaceWith(imgList[i]);
+            // currentImgTab.setAttribute("style", `background-image: url(${imgList[lastImgID].src})`);
+            // figureTab.replaceChild(imgList[i], currentImgTab);
             let highlightCurrentImgTab = document.getElementById(i);
             highlightCurrentImgTab.checked = true;
         };
@@ -156,12 +165,19 @@
 
         loadAttractData();
         
-        imgListTab.addEventListener("click", function(event){
-            // console.log(event.target.id);
-            // console.log(imgList);
-            updateCurrentImg(event.target.id);
+        previousImgTab.addEventListener("click", (event)=>{
+            let currentImgTab = document.getElementById("currentImg");
+            let currentImgID = parseInt(currentImgTab.getAttribute("alt"));
+            // console.log(currentImgID);
+            if(currentImgID-1>=0){
+                updateCurrentImg(currentImgID-1);
+            }else{
+                updateCurrentImg(imgList.length-1);
+            };
+            let newCurrentImgTab = document.getElementById("currentImg");
+            newCurrentImgTab.setAttribute("class","previousImg");
         });
-        
+
         nextImgTab.addEventListener("click", (event)=>{
             let imgAmount = imgList.length;
             let currentImgTab = document.getElementById("currentImg");
@@ -172,16 +188,19 @@
             }else{
                 updateCurrentImg(0);
             };
+            let newCurrentImgTab = document.getElementById("currentImg");
+            newCurrentImgTab.setAttribute("class","nextImg");
         });
 
-        previousImgTab.addEventListener("click", (event)=>{
-            let currentImgTab = document.getElementById("currentImg");
-            let currentImgID = parseInt(currentImgTab.getAttribute("alt"));
-            // console.log(currentImgID);
-            if(currentImgID-1>=0){
-                updateCurrentImg(currentImgID-1);
+        imgListTab.addEventListener("click", function(event){
+            // console.log(event.target.id);
+            if(event.target.id=="imgList"){
+                void(0);
+                // return "click wrong spot!"
             }else{
-                updateCurrentImg(imgList.length-1);
+                updateCurrentImg(event.target.id);
+                let newCurrentImgTab = document.getElementById("currentImg");
+                newCurrentImgTab.setAttribute("class","pickImg");
             };
         });
 
