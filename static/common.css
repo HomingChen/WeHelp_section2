@@ -1,0 +1,107 @@
+body{
+    display: grid;
+    grid-template-columns: 1fr 1200px 1fr;
+    grid-template-rows: 54px 1fr 104px;
+    grid-template-areas: 
+        "nav nav nav"
+        "mainContent mainContent mainContent"
+        "footer footer footer";
+    margin: 0px;
+}
+a{
+    color: inherit;
+    text-decoration: inherit;
+}
+nav{
+    grid-area: nav;
+    display: grid;
+    grid-template-columns: 1fr 150px 875px 84px 91px 1fr;
+    grid-template-areas: 
+        ". navTitle . navBook navLogin .";
+    align-items: center;
+}
+.navTitle{
+    grid-area: navTitle;
+    position: relative;
+    /* width: 150px;
+    height: 34px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 34px;
+    color: #448899;
+}
+.navBook{
+    grid-area: navBook;
+    position: relative;
+    /* width: 64px;
+    height: 14px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    color: #666666;
+    padding: 10px;
+}
+.navLogin{  
+    grid-area: navLogin;
+    position: relative;
+    /* width: 71px;
+    height: 14px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    color: #666666;
+    padding: 10px;
+}
+footer{
+    grid-area: footer;
+    background-color: #757575;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+footer > span{
+    width: 234px;
+    height: 14px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    color: #FFFFFF;
+}
+@media(max-width:1200px){
+    body{
+        display: grid;
+        grid-template-columns: 1fr 700px 1fr;
+        grid-template-rows: 54px 1fr 104px;
+    }
+    nav{
+        grid-area: nav;
+        display: grid;
+        grid-template-columns: 150px 1fr 84px 91px;
+        grid-template-areas: 
+            "navTitle . navBook navLogin";
+        padding: 10px;
+    }
+}
+@media(max-width:700px){
+    body{
+        display: grid;
+        grid-template-columns: 1fr 360px 1fr;
+        grid-template-rows: 54px 1fr 104px;
+    }
+    nav{
+        grid-area: nav;
+        display: grid;
+        grid-template-columns: 150px 1fr 84px 91px;
+        grid-template-areas: 
+            "navTitle . navBook navLogin";
+        padding: 10px;
+    }
+}

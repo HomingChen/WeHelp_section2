@@ -1,0 +1,451 @@
+.mainContent{
+    grid-area: mainContent;
+    display: grid;
+    grid-template-columns: 1fr 1200px 1fr;
+    grid-template-rows: 480px 1fr;
+    grid-template-areas: 
+        ". guidanceBooking ."
+        ". details .";
+}
+.guidanceBooking{
+    grid-area: guidanceBooking;
+    display: grid;
+    grid-template-columns: 570px 630px;
+    grid-template-rows: 480px;
+    grid-template-areas: "figure booking";
+    border-bottom: 1px solid #E8E8E8;
+}
+.guidanceBooking > figure{
+    grid-area: figure;
+    display: grid;
+    grid-template-columns: 10px 36px 448px 36px 10px;
+    grid-template-rows: 185px 36px 160px 12px 13px;
+    grid-template-areas: 
+        ". . . . ."
+        ". previousImg . nextImg ."
+        ". . . . ."
+        ". . imgList . ."
+        ". . . . .";
+    padding: 37px 15px 37px 15px;
+    margin: 0px;
+    /* background-image: url("url");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-origin: content-box; */
+}
+.guidanceBooking > figure > img{
+    display: block;
+    height: 406px;
+    width: 540px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+.guidanceBooking > figure > button#previousImg{
+    grid-area: previousImg;
+    border: none;
+    background-color: transparent;
+    background-image: url("btn_previousImg.svg");
+    opacity: 0.5;
+    z-index: 1;
+    padding: 0px;
+}
+.guidanceBooking > figure > button#nextImg{
+    grid-area: nextImg;
+    border: none;
+    background-color: transparent;
+    background-image: url("btn_nextImg.svg");
+    opacity: 0.5;
+    z-index: 1;
+    padding: 0px;
+}
+.guidanceBooking > figure > button#previousImg:hover, 
+.guidanceBooking > figure > button#nextImg:hover{
+    opacity: 1;
+}
+.guidanceBooking > figure > div#imgList{
+    grid-area: imgList;
+    display: flex;
+    justify-content: center;
+}
+div#imgList > input[type="radio"]{
+    width: 12px;
+    height: 12px;
+    appearance: none;
+    border: 1px solid #FFFFFF;
+    border-radius: 6px;
+    background: #FFFFFF;
+    opacity: 0.75;
+    margin: 0px 6px;
+}
+div#imgList > input[type="radio"]:checked{
+    background: #000000;
+}
+.guidanceBooking > div{
+    grid-area: booking;
+    display: grid;
+    grid-template-columns: 600px;
+    grid-template-rows: 33px 15px 22px 20px 300px 10px;
+    grid-template-areas: 
+        "name"
+        "."
+        "categorynMRT"
+        "."
+        "bookingData"
+        ".";
+    padding: 40px 15px 48px 15px;
+}
+.guidanceBooking > div > span:first-child{
+    grid-area: name;
+    /* width: 600px;
+    height: 33px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+}
+.guidanceBooking > div > span:nth-child(2){
+    grid-area: categorynMRT;
+    /* width: 600px;
+    height: 22px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+}
+.guidanceBooking div > form{
+    grid-area: bookingData;
+    display: grid;
+    grid-template-columns: 81px 1fr;
+    grid-template-rows: 22px 24px 35px 22px 22px 1fr;
+    grid-template-areas: 
+        "bookingTitle bookingTitle"
+        "bookingSubtitle bookingSubtitle"
+        "dateTitle dateInput"
+        "timeSlotTitle timeSlotInput"
+        "chargeTitle chargeInfo"
+        "stratBookingBtn stratBookingBtn";
+    gap: 15px 5px;
+    /* width: 600px;
+    height: 302px; */
+    background: #E8E8E8;
+    border-radius: 5px;
+    padding: 15px 20px;
+}
+#bookingData > span:first-child{
+    grid-area: bookingTitle;
+    /* width: 560px;
+    height: 22px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+}
+#bookingData > span:nth-child(2){
+    grid-area: bookingSubtitle;
+    /* width: 560px;
+    height: 24px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+}
+#bookingData > span:nth-child(3){
+    grid-area: dateTitle;
+    /* width: 81px;
+    height: 17px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+}
+#bookingData > input:nth-child(4){
+    grid-area: dateInput;
+    width: 173px;
+    height: 25px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19px;
+    display: flex;
+    align-items: center;
+    color: #000000;
+    border: none;
+    background: #FFFFFF;
+    padding: 5px 10px 5px 10px;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: block;
+    width: 24px;
+    height: 24px;
+    background: url("/static/icon_calendar.svg") no-repeat;
+    padding: 0px;
+}
+#bookingData > span:nth-child(5){
+    grid-area: timeSlotTitle;
+    /* width: 81px;
+    height: 22px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+}
+#bookingData > div:nth-child(6){
+    grid-area: timeSlotInput;
+    display: flex;
+    align-items: center;
+}
+#bookingData > div:nth-child(6) > label{
+    width: 48px;
+    height: 14px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    color: #666666;
+    margin: 4px 13px 4px 0px;
+}
+#bookingData > div:nth-child(6) > input[type="radio"]{
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #FFFFFF;
+    border-radius: 11px;;
+    background: #FFFFFF;
+    margin: 0px 4px 0px 5px;
+}
+#bookingData > div:nth-child(6) > input[type="radio"]:checked{
+    background: #448899;
+}
+#bookingData > span:nth-last-child(3){
+    grid-area: chargeTitle;
+    /* width: 81px;
+    height: 22px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+}
+#bookingData > span:nth-last-child(2){
+    grid-area: chargeInfo;
+    /* width: 108px;
+    height: 14px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    color: #666666;
+}
+#bookingData > button:nth-last-child(1){
+    grid-area: stratBookingBtn;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    width: 154px;
+    height: 36px;
+    position: relative;
+    left: 0px;
+    top: 10px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 16px;
+    color: #FFFFFF;
+    background: #448899;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+}
+#bookingData > button:nth-last-child(1):hover{
+    background-color: #66AABB;
+}
+.details{
+    grid-area: details;
+    display: grid;
+    grid-template-columns: 1180px;
+    grid-template-rows: auto 20px 32px auto 20px 32px auto;
+    grid-template-areas: 
+        "description" 
+        "." 
+        "addressTitle" 
+        "address" 
+        "." 
+        "transportTitle" 
+        "transport";
+    padding: 50px 10px 120px 10px;
+}
+.details p:first-child{
+    grid-area: description;
+    /* width: 1180px;
+    height: 96px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 23px;
+    color: #666666;
+    padding: 0px;
+    margin: 0px;
+}
+.details span:nth-child(2){
+    grid-area: addressTitle;
+    /* width: 1180px;
+    height: 32px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+    padding: 0px;
+}
+.details p:nth-child(3){
+    grid-area: address;
+    /* width: 1180px;
+    height: 24px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 23px;
+    color: #666666;
+    padding: 0px;
+    margin: 0px;
+}
+.details span:nth-child(4){
+    grid-area: transportTitle;
+    /* width: 1180px;
+    height: 32px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #666666;
+    padding: 0px;
+}
+.details p:last-child{
+    grid-area: transport;
+    /* width: 1180px;
+    height: 48px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 23px;
+    color: #666666;
+    margin: 0px;
+}
+@media(max-width:1200px){
+    .mainContent{
+        grid-template-columns: 1fr 700px 1fr;
+
+    }
+    .guidanceBooking{
+        grid-template-columns: 360px 340px;
+    }
+    .guidanceBooking > figure{
+        grid-template-columns: 10px 36px 1fr 36px 10px;
+        /* grid-template-rows: 157px 36px 135px 12px 10px; */
+        padding: 37px 10px 37px 0px;
+    }
+    .guidanceBooking > figure > img{
+        width: 350px;
+    }
+    .guidanceBooking > div{
+        grid-template-columns: 340px;
+        padding: 40px 0px 48px 10px;
+    }
+    #bookingData > span:nth-child(2){
+        grid-area: bookingSubtitle;
+        line-height: 23px;
+    }
+    .details{
+        grid-template-columns: 700px;
+    }
+
+}
+@media(max-width:700px){
+    .mainContent{
+        grid-template-columns: 1fr 360px 1fr;
+        grid-template-rows: 800px 1fr;
+        grid-template-areas: 
+            ". guidanceBooking ."
+            ". details .";
+    }
+    .guidanceBooking{
+        display: grid;
+        grid-template-columns: 360px;
+        grid-template-rows: 350px 450px;
+        grid-template-areas:
+        "figure"
+        "booking";
+        border-bottom: 1px solid #757577;
+    }
+    .guidanceBooking > figure{
+        grid-template-columns: 10px 36px 268px 36px 10px;
+        grid-template-rows: 157px 36px 135px 12px 10px;
+        padding: 0px;
+    }
+    .guidanceBooking > figure > img{
+        display: block;
+        position: absolute;
+        top: 54px;
+        left: 0px;
+        height: 350px;
+        width: max(100%, 360px);
+        border-radius: 0px;
+    }
+    .guidanceBooking > div{
+        grid-template-columns: 340px;
+        padding: 30px 10px 40px 10px;
+    }
+    .guidanceBooking div > form{
+        grid-template-rows: 22px 48px 35px 22px 22px 1fr;
+    }
+    #bookingData > span:nth-child(2){
+        grid-area: bookingSubtitle;
+        line-height: 23px;
+    }
+    .details{
+        grid-template-columns: 340px;
+    }
+}

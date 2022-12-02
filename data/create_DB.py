@@ -24,7 +24,7 @@ except mysql.connector.Error as err:
 ### use attractions table
 create_attractions_table = textwrap.dedent("""\
     CREATE TABLE attractions(
-        attrac_id      BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        id      BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
         name           VARCHAR(100) NOT NULL UNIQUE,
         category       VARCHAR(100) NOT NULL,
         description    VARCHAR(5000) NOT NULL,
@@ -47,7 +47,7 @@ except mysql.connector.Error as err:
 ### insert attractions data
 insert_attractions_data = textwrap.dedent("""\
     INSERT INTO attractions
-    (attrac_id, name, category, description, address, transport, mrt, lat, lng)
+    (id, name, category, description, address, transport, mrt, lat, lng)
     VALUES (%(attrac_id)s, %(name)s, %(category)s, %(description)s, %(address)s, 
     %(transport)s, %(mrt)s, %(lat)s, %(lng)s);
     """)
@@ -70,7 +70,7 @@ create_files_table = textwrap.dedent("""\
         type           ENUM('image', 'audio', 'video', 'undefined') NOT NULL,
         extention      VARCHAR(10) NOT NULL,
         path           VARCHAR(500) UNIQUE NOT NULL ,
-        FOREIGN KEY(attrac_id) REFERENCES attractions(attrac_id), 
+        FOREIGN KEY(attrac_id) REFERENCES attractions(id), 
         INDEX indexes(attrac_id, type, extention)
     ) ENGINE=InnoDB;""")
 try:

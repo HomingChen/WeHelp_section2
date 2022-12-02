@@ -9,27 +9,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- 取用CSS設定 -->
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/common.css">
+    <link rel="stylesheet" type="text/css" href="/static/index.css">
     <title>台北一日遊</title>
 </head>
-<body class="indexBody">
+<body>
     <nav>
         <span class="navTitle">台北一日遊</span>
         <span class="navBook">預定行程</span>
         <span class="navLogin">登入/註冊</span>
     </nav>
-    <div class="heroSection" id="heroSection">
-        <span class="heroTitle">輕鬆享受台北一日悠閒</span>
-        <span class="heroSubtitle">探索每個角落，體驗城市的深度旅遊行程</span>
-        <form>
-            <input class="searchbar" id="searchbar" type="text" placeholder="輸入景點名稱查詢"/>
-            <button class="searchBtm" id="searchBtm"></button>
-            <div class="categoryList" id="categoryList" style="display: none;">
-                <!-- 以下向後端索取類別(category)資料、並產生對應內容 -->
-            </div>
-        </form>
-    </div>
-    <!-- 以下向後端索取景點(attrac)資料、並產生對應內容 -->
+    <div class="mainContent" id="mainContent">
+        <div class="heroSection" id="heroSection">
+            <span class="heroTitle">輕鬆享受台北一日悠閒</span>
+            <span class="heroSubtitle">探索每個角落，體驗城市的深度旅遊行程</span>
+            <form>
+                <input class="searchbar" id="searchbar" type="text" placeholder="輸入景點名稱查詢"/>
+                <button class="searchBtm" id="searchBtm" type="button"></button>
+                <div class="categoryList" id="categoryList" style="display: none;">
+                    <!-- 以下向後端索取類別(category)資料、並產生對應內容 -->
+                </div>
+            </form>
+        </div>
+        <!-- 以下向後端索取景點(attrac)資料、並產生對應內容 -->
     </div>
     <footer id="footer"><span>COPYRIGHT &copy; 2022 台北一日遊</span></footer>
     <script>
@@ -64,17 +66,18 @@
                     }).then(function(data){
                         requestData.page = data["nextPage"];
                         requestData.onLoading = false;
-                        let footerTab = document.getElementById("footer");
-                        let mainContentTab = document.createElement("div");              // 建立新的mainContent以利搜尋新的景點時，把舊結果移除
-                        mainContentTab.setAttribute("class", "attracList");
-                        mainContentTab.setAttribute("id", "mainContent");
-                        footerTab.parentNode.insertBefore(mainContentTab, footerTab);    // 將mainContent的標籤嵌入於footer之上
-                        for(let i=0; i<data["data"].length; i++){                        // 針對收到的回應，抓取圖片、景點名稱、捷運與類別資料
+                        let attracListTab = document.createElement("div");              // 建立新的attracList以利搜尋新的景點時，把舊結果移除
+                        attracListTab.setAttribute("class", "attracList");
+                        attracListTab.setAttribute("id", "attracList");
+                        mainContentTab.appendChild(attracListTab);                      // 將attracList的標籤嵌入於mainContent之內
+                        // footerTab.parentNode.insertBefore(mainContentTab, footerTab);    
+                        for(let i=0; i<data["data"].length; i++){                       // 針對收到的回應，抓取圖片、景點名稱、捷運與類別資料
                             let image = data["data"][i]["images"][0];
                             let attrac = data["data"][i]["name"];
+                            let detailURL = "/attraction/"+data["data"][i]["id"];
                             let mrt = data["data"][i]["mrt"];
                             let category = data["data"][i]["category"];
-                            renderAttracList(image, attrac, mrt, category);              // 將資料畫入頁面中
+                            renderAttracList(image, attrac, detailURL, mrt, category);  // 將資料畫入頁面中
                         };
                         observer.observe(document.querySelector("figure:nth-last-child(-n+6)"));
                     });
@@ -93,10 +96,12 @@
             },{root: document.querySelector("figure:nth-last-child(-n+6)"), threshold: [0, 0.5, 1]});
 
         // 將景點資料畫入頁面中
-        const renderAttracList = (image, attrac, mrt, category)=>{
+        const renderAttracList = (image, attrac, detailURL, mrt, category)=>{
             // 建立與設定tabs
-            let mainContentTab = document.getElementById("mainContent");
+            let attracListTab = document.getElementById("attracList");
             let figTab = document.createElement("figure");
+            let aTab = document.createElement("a");
+            aTab.setAttribute("href", detailURL);
             let imgTab = document.createElement("img");
             imgTab.setAttribute("src", image);
             let figcapTab = document.createElement("figcaption");
@@ -111,8 +116,9 @@
             categoryTab.setAttribute("class", "figCat");
             categoryTab.textContent = category;
             // 組合tabs
-            mainContentTab.appendChild(figTab);
-            figTab.appendChild(imgTab);
+            attracListTab.appendChild(figTab);
+            figTab.appendChild(aTab);
+            aTab.appendChild(imgTab);
             figTab.appendChild(figcapTab);
             figTab.appendChild(divTab);
             figcapTab.appendChild(attracTab);
@@ -120,7 +126,9 @@
             divTab.appendChild(categoryTab);
             // 預期的樣子
             // <figure>
-            //     <img src="attrac_img_path" />
+            //     <a href="/attraction/id">
+            //         <img src="attrac_img_path" />
+            //     <a/>
             //     <figcaption>
             //         <span class="figAttraction">Attraction</span>
             //     </figcaption>
@@ -160,8 +168,8 @@
             if(inputKeyword==requestData.keyword){
                 return "input keyword: (the same as the last keyword => do nothing)"
             }else if(typeof(inputKeyword)=="string" && inputKeyword.trim().length>0 && inputKeyword.trim().length<=100){
-                let mainContentTab = document.getElementById("mainContent");
-                mainContentTab.remove();
+                let attracListTab = document.getElementById("attracList");
+                attracListTab.remove();
                 requestData.page = 0;
                 requestData.keyword = inputKeyword;
                 getData(requestData);
@@ -176,12 +184,13 @@
         getCategoryList();
 
         // 取得點擊時的相關物件資料
-        let inputTab = document.getElementById("searchbar");
-        let categoryListTab = document.getElementById("categoryList");
-
+        const mainContentTab = document.getElementById("mainContent");
+        const inputTab = document.getElementById("searchbar");
+        const categoryListTab = document.getElementById("categoryList");
+        
         // 點擊時所觸發的動作
         window.addEventListener("click", function(event){
-            event.preventDefault();
+            // event.preventDefault();
             if(event.target.id=="searchbar"){                   // 點擊搜尋列時，展開類別清單
                 if(categoryListTab.style.display=="none"){
                     categoryListTab.style.display = "grid";

@@ -8,20 +8,191 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <!-- 取用CSS設定 -->
+    <link rel="stylesheet" type="text/css" href="/static/common.css">
+    <link rel="stylesheet" type="text/css" href="/static/attraction.css">
     <title>台北一日遊</title>
 </head>
-<body class="attracDetailBody">
+<body>
     <nav>
-        <span class="navTitle">台北一日遊</span>
+        <span class="navTitle"><a href="/">台北一日遊</a></span>
         <span class="navBook">預定行程</span>
         <span class="navLogin">登入/註冊</span>
     </nav>
-    <div class="attracDetail">
-        attraction
-        <hr>
-        detail
+    <div class="mainContent">
+        <div class="guidanceBooking">
+            <figure id="images">
+                <img id="currentImg" src="" alt=""/>
+                <button id="previousImg"></button>
+                <button id="nextImg"></button>
+                <div id="imgList">
+                    <!-- 往下自動產生圖片引索點點 -->
+                </div>
+            </figure>
+            <div>
+                <span id="name"></span>
+                <span id="categorynMRT"></span>
+                <form id="bookingData">
+                    <span class="bookingTitle">訂購導覽行程</span>
+                    <span class="bookingSubtitle">以此景點為中心的一日行程，帶您探索城市角落故事</span>
+                    <span class="date">選擇日期：</span>
+                    <input id="tourDate" type="date">
+                    <span class="timeSlot">選擇時間：</span>
+                    <div id="timeSlot">
+                        <input id="morning" name="timeSlot" type="radio" value="morning">
+                        <label for="morning">上半天</label>
+                        <input id="affternoon" name="timeSlot" type="radio" value="afternoon">
+                        <label for="affternoon">下半天</label>
+                    </div>
+                    <span class="charge">導覽費用：</span>
+                    <span id="charge">(請先選擇時間)</span>
+                    <button id="stratBooking" type="button" onclick="submitBookingData()">開始預約行程</button>
+                </form>
+            </div>
+        </div>
+        <div class="details">
+            <p id="description"></p>
+            <span>景點地址：</span>
+            <p id="address"></p>
+            <span>交通方式：</span>
+            <p id="transport"></p>
+        </div>
     </div>
     <footer><span>COPYRIGHT &copy; 2022 台北一日遊</span></footer>
+    <script>
+        // const attrac_id = {{id}};
+        const attrac_id = document.URL.match(/[0-9]+?$/)[0];
+        // console.log(attrac_id);
+        const nameTab = document.getElementById("name");
+        const categorynMRTTab = document.getElementById("categorynMRT");
+        const descriptionTab = document.getElementById("description");
+        const addressTab = document.getElementById("address");
+        const transportTab = document.getElementById("transport");
+        const figureTab = document.getElementById("images");
+        const imgListTab = document.getElementById("imgList");
+        const imgList = [];
+        const previousImgTab = document.getElementById("previousImg");
+        const nextImgTab = document.getElementById("nextImg");
+        const tourDateTab = document.getElementById("tourDate");
+        const timeSlotTab = document.getElementsByName("timeSlot");
+        const stratBookingTab = document.getElementById("stratBooking");
+        let tourDate = "";
+        let timeSlot = "";
+        let charge = "";
+        let chargeTab = document.getElementById("charge");
+        const renderImgList = (i)=>{
+            let imgListRadioTab = document.createElement("input");
+            imgListRadioTab.setAttribute("name", "imgList");
+            imgListRadioTab.setAttribute("type", "radio");
+            imgListRadioTab.setAttribute("id", i);
+            imgListRadioTab.setAttribute("alt", i);
+            imgListTab.appendChild(imgListRadioTab);
+            // 期望的樣子
+            // <div id="imgList">
+            //     <input name="imgList" type="radio" id="i"></input>
+        };
+        const preloadingImg = (i, imgSrc)=>{
+            let img = new Image();
+            img.id = "currentImg";
+            img.src = imgSrc;
+            img.alt = i;
+            imgList.push(img);
+        };
+        const updateCurrentImg = (i)=>{
+            let currentImgTab = document.getElementById("currentImg");
+            figureTab.replaceChild(imgList[i], currentImgTab);
+            let highlightCurrentImgTab = document.getElementById(i);
+            highlightCurrentImgTab.checked = true;
+        };
+        const loadAttractData = ()=>{
+            fetch("/api/attraction/"+attrac_id, {"method": "GET"}
+                ).then(function(response){
+                    return response.json();
+                }).then(function(data){
+                    nameTab.textContent = data["data"]["name"];
+                    categorynMRTTab.textContent = `${data["data"]["category"]} at ${data["data"]["mrt"]}`;
+                    descriptionTab.textContent = data["data"]["description"];
+                    addressTab.textContent = data["data"]["address"];
+                    transportTab.textContent = data["data"]["transport"];
+                    for(i=0; i<data["data"]["images"].length; i++){
+                        preloadingImg(i, data["data"]["images"][i]);
+                        renderImgList(i);
+                    };
+                    updateCurrentImg(0);
+                    document.getElementById(0).checked = true;
+                    // console.log(imgList);
+                });
+        };
+        const setBookingStartDate = ()=>{
+            // let today = new Date();
+            // let yyyy = today.getFullYear();
+            // let mm = String(today.getMonth()+1);
+            // let dd = String(today.getDate());
+            let currentDate = new Date().toJSON().slice(0, 10);
+            // console.log(today, yyyy, mm, dd, currentDate);
+            document.getElementById("tourDate").min = currentDate;
+        };
+        const submitBookingData = ()=>{
+            let attractionID = attrac_id;
+            let date = document.getElementById("tourDate").value;
+            let time = timeSlot;
+            let price = charge;
+            let response = {"attractionID": attractionID, "date": date, "time": time, "price": price};
+            if(date.length===0){
+                console.log("尚未選擇日期");
+                // 待完成css動畫提示
+                return "尚未選擇日期";
+            }else if(timeSlot.length===0){
+                console.log("尚未選擇時段");
+                // 待完成css動畫提示
+                return "尚未選擇時段";
+            }else{
+                console.log(response);
+                // 待完成重新導向頁面
+                return respons;
+            };
+        };
+        setBookingStartDate();
+
+        loadAttractData();
+        
+        imgListTab.addEventListener("click", function(event){
+            // console.log(event.target.id);
+            // console.log(imgList);
+            updateCurrentImg(event.target.id);
+        });
+        
+        nextImgTab.addEventListener("click", (event)=>{
+            let imgAmount = imgList.length;
+            let currentImgTab = document.getElementById("currentImg");
+            let currentImgID = parseInt(currentImgTab.getAttribute("alt"));
+            // console.log(currentImgID);
+            if(currentImgID+1<imgAmount){
+                updateCurrentImg(currentImgID+1);
+            }else{
+                updateCurrentImg(0);
+            };
+        });
+
+        previousImgTab.addEventListener("click", (event)=>{
+            let currentImgTab = document.getElementById("currentImg");
+            let currentImgID = parseInt(currentImgTab.getAttribute("alt"));
+            // console.log(currentImgID);
+            if(currentImgID-1>=0){
+                updateCurrentImg(currentImgID-1);
+            }else{
+                updateCurrentImg(imgList.length-1);
+            };
+        });
+
+        for(let i=0; i<timeSlotTab.length; i++){
+            timeSlotTab[i].addEventListener("click", (event)=>{
+                timeSlot = event.target.id;
+                (timeSlot==="morning") ? charge=2000 : charge=2500;
+                chargeTab.textContent = `新台幣${charge}元`;
+            });
+        };
+
+    </script>
 </body>
 </html>
