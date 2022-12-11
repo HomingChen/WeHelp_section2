@@ -6,6 +6,7 @@
     grid-template-areas: 
         ". guidanceBooking ."
         ". details .";
+    background-color: #FFFFFF;
 }
 .guidanceBooking{
     grid-area: guidanceBooking;
@@ -92,6 +93,7 @@
     opacity: 0.5;
     z-index: 1;
     padding: 0px;
+    cursor: pointer;
 }
 .guidanceBooking > figure > button#nextImg{
     grid-area: nextImg;
@@ -101,6 +103,7 @@
     opacity: 0.5;
     z-index: 1;
     padding: 0px;
+    cursor: pointer;
 }
 .guidanceBooking > figure > button#previousImg:hover, 
 .guidanceBooking > figure > button#nextImg:hover{
@@ -120,6 +123,7 @@ div#imgList > input[type="radio"]{
     background: #FFFFFF;
     opacity: 0.75;
     margin: 0px 6px;
+    cursor: pointer;
 }
 div#imgList > input[type="radio"]:checked{
     background: #000000;
@@ -244,6 +248,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     height: 24px;
     background: url("/static/icon_calendar.svg") no-repeat;
     padding: 0px;
+    cursor: pointer;
 }
 #bookingData > span:nth-child(5){
     grid-area: timeSlotTitle;
@@ -273,6 +278,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     line-height: 13px;
     color: #666666;
     margin: 4px 13px 4px 0px;
+    cursor: pointer;
 }
 #bookingData > div:nth-child(6) > input[type="radio"]{
     appearance: none;
@@ -282,6 +288,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border-radius: 11px;;
     background: #FFFFFF;
     margin: 0px 4px 0px 5px;
+    cursor: pointer;
 }
 #bookingData > div:nth-child(6) > input[type="radio"]:checked{
     background: #448899;
@@ -333,6 +340,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
+    cursor: pointer;
 }
 #bookingData > button:nth-last-child(1):hover{
     background-color: #66AABB;

@@ -17,7 +17,7 @@
     <nav>
         <span class="navTitle"><a href="/">台北一日遊</a></span>
         <span class="navBook">預定行程</span>
-        <span class="navLogin">登入/註冊</span>
+        <span id="navMember"></span>
     </nav>
     <div class="mainContent">
         <div class="guidanceBooking">
@@ -31,7 +31,7 @@
                 </div>
             </figure>
             <div>
-                <span id="name"></span>
+                <span id="attraction"></span>
                 <span id="categorynMRT"></span>
                 <form id="bookingData">
                     <span class="bookingTitle">訂購導覽行程</span>
@@ -60,11 +60,13 @@
         </div>
     </div>
     <footer><span>COPYRIGHT &copy; 2022 台北一日遊</span></footer>
+    <!-- 取用member的javascript -->
+    <script type="module" src="/static/member.js"></script>
     <script>
         // const attrac_id = {{id}};
         const attrac_id = document.URL.match(/[0-9]+?$/)[0];
         // console.log(attrac_id);
-        const nameTab = document.getElementById("name");
+        const attractionTab = document.getElementById("attraction");
         const categorynMRTTab = document.getElementById("categorynMRT");
         const descriptionTab = document.getElementById("description");
         const addressTab = document.getElementById("address");
@@ -88,9 +90,6 @@
             imgListRadioTab.setAttribute("id", i);
             imgListRadioTab.setAttribute("alt", i);
             imgListTab.appendChild(imgListRadioTab);
-            // 期望的樣子
-            // <div id="imgList">
-            //     <input name="imgList" type="radio" id="i"></input>
         };
         const preloadingImg = (i, imgSrc)=>{
             let img = new Image();
@@ -118,7 +117,7 @@
                 ).then(function(response){
                     return response.json();
                 }).then(function(data){
-                    nameTab.textContent = data["data"]["name"];
+                    attractionTab.textContent = data["data"]["name"];
                     categorynMRTTab.textContent = `${data["data"]["category"]} at ${data["data"]["mrt"]}`;
                     descriptionTab.textContent = data["data"]["description"];
                     addressTab.textContent = data["data"]["address"];

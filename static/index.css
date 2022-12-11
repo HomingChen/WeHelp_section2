@@ -82,6 +82,7 @@ form{
     background-size: 30px 30px;
     background-repeat: no-repeat;
     background-position: center;
+    cursor: pointer;
 }
 .searchBtm:hover{
     background-color: #66AABB;
@@ -114,6 +115,7 @@ form{
     align-items: center;
     justify-items: center;
     color: #000000;
+    cursor: pointer;
 }
 .categoryList > span:hover{
     background: #E8E8E8;
