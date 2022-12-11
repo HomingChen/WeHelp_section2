@@ -1,11 +1,13 @@
-import json
 from flask import *
+import jwt
 import sql
+import re
 
 app=Flask(__name__)
 app.config["JSON_AS_ASCII"]=False
 app.config["TEMPLATES_AUTO_RELOAD"]=True
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+key = "welovepongpong"
 
 # Pages
 @app.route("/")
@@ -24,44 +26,104 @@ def thankyou():
 # APIs
 @app.route("/api/attractions")
 def get_attractions():
-	# try:
+	try:
 		page = request.args.get("page")
 		keyword = request.args.get("keyword")
-		if keyword == None or "":
-			print("get_attractions")
-			data = sql.get_attractions(page=page)
-		else:
-			print("get_attractions_with_keyword")
-			data = sql.get_attractions_with_keyword(page=page, keyword=keyword)
-		return jsonify(data)
-	# except:
-	# 	app.register_error_handler()
+		print(keyword)
+		data = sql.get_attractions(page=page, keyword=keyword)["data"]
+		return jsonify(data), 200
+	except:
+		return jsonify({"error": True, "message": "內部伺服器錯誤"}), 500
 
 @app.route("/api/attraction/<attractionID>")
 def get_attraction_with_ID(attractionID):
 	try:
-		data = sql.get_attraction_with_ID(attractionID)
-		return jsonify(data)
+		response = sql.get_attraction_with_ID(attractionID)
+		if response["result"]==True:
+			return jsonify(response["data"]), 200
+		else:
+			return jsonify({"error": True, "message": "景點編號不正確"}), 400
 	except:
-		app.register_error_handler()
+		return jsonify({"error": True, "message": "內部伺服器錯誤"}), 500
 
 @app.route("/api/categories")
 def get_categories():
-	# try: 
-		data = sql.get_categories()
-		return jsonify(data)
-	# except:
-	# 	app.register_error_handler()
+	try:
+		response = sql.get_categories()
+		if response["result"]==True:
+			return jsonify(response["data"]), 200
+	except:
+		return jsonify({"error": True, "message": "內部伺服器錯誤"}), 500
 
-# error
-@app.errorhandler(404)
-def bad_request(e):
-	message = "景點編號不正確"
-	return jsonify({"error": True, "message": message}), 404
+@app.route("/api/user", methods=["POST"])
+def register():
+	try:
+		sign_up_data = request.get_json()
+		if False in [isNameValid(sign_up_data["name"]), isEmailValid(sign_up_data["email"]), isPasswordValid(sign_up_data["password"])]:
+			return {"error": True, "message": "註冊失敗，重複的 Email 或其他原因"}, 400
+		else:
+			result = sql.member_sign_up(sign_up_data)
+			if result["result"] == True:
+				return {"ok": True}, 200
+			else:
+				return {"error": True, "message": "註冊失敗，重複的 Email 或其他原因"}, 400
+	except:
+		return {"error": True, "message": "伺服器內部錯誤"}, 500
 
-@app.errorhandler(500)
-def server_error(e):
-	message = "內部伺服器錯誤"
-	return jsonify({"error": True, "message": message}), 500
+def isNameValid(name):
+	if len(name)>0 & len(name)<=100:
+		return True
+	else:
+		return False
+
+def isEmailValid(email):
+	regex_check_result = re.match(r"[^@]+@[^@]+", email).group(0)
+	if len(regex_check_result)==len(email) & len(email)<=100:
+		return True
+	else:
+		return False
+
+def isPasswordValid(password):
+	if len(password)>=8 & len(password)<=32:
+		return True
+	else:
+		return False
+
+@app.route("/api/user/auth", methods=["GET"])
+def userStatusCheck():
+	cookie = request.cookies.to_dict()
+	try: 
+		userStatus = jwt.decode(jwt=cookie["status"], key=key, algorithms="HS256")
+		if userStatus["id"]==sql.get_member_data_by_email(userStatus["email"])["data"]["member_id"]:
+			return {"data": userStatus}, 200
+		else:
+			return {"data": None}, 200
+	except:
+		return {"data": None}, 200
+
+@app.route("/api/user/auth", methods=["PUT"])
+def login():
+	try:
+		login_data = request.get_json()
+		query_response = sql.get_member_data_by_email(login_data["email"])
+		if query_response["result"]==False:
+			return {"error": True, "message": "登入失敗，帳號或密碼錯誤或其他原因"}, 400
+		elif query_response["data"]["password"]!=login_data["password"]:
+			return {"error": True, "message": "登入失敗，帳號或密碼錯誤或其他原因"}, 400
+		elif query_response["data"]["password"]==login_data["password"]:
+			response_data = {"id": query_response["data"]["member_id"], 
+				"name": query_response["data"]["name"], "email": query_response["data"]["email"]}
+			response_cookie_encoded = jwt.encode(response_data, key, "HS256")					# 此處的key是指加密的key
+			response = make_response({"ok": True})
+			response.set_cookie(key="status", value=response_cookie_encoded, max_age=604800)	# 此處的key是指cookie的key
+			return response, 200
+	except:
+		return {"error": True, "message": "伺服器內部錯誤"}, 500
+
+@app.route("/api/user/auth", methods=["DELETE"])
+def logout():
+	response = make_response({"ok": True})
+	response.set_cookie(key="status", value="", max_age=-1)
+	return response, 200
 
 app.run(host="0.0.0.0", port=3000)

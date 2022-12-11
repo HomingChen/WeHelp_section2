@@ -47,7 +47,7 @@ except mysql.connector.Error as err:
 ### insert attractions data
 insert_attractions_data = textwrap.dedent("""\
     INSERT INTO attractions
-    (id, name, category, description, address, transport, mrt, lat, lng)
+    (attrac_id, name, category, description, address, transport, mrt, lat, lng)
     VALUES (%(attrac_id)s, %(name)s, %(category)s, %(description)s, %(address)s, 
     %(transport)s, %(mrt)s, %(lat)s, %(lng)s);
     """)
@@ -95,5 +95,23 @@ try:
 except mysql.connector.Error as err:
     if err.errno == 1062:
         print("Data 'files' is ready for use.")
+    else:
+        print(err.msg)
+
+### use member data
+create_members_table = textwrap.dedent("""
+    CREATE TABLE members(
+        member_id   BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        name        VARCHAR(100) NOT NULL,
+        email       VARCHAR(100) UNIQUE NOT NULL,
+        password    VARCHAR(32) NOT NULL,
+        INDEX indexes(name, email)
+    ) ENGINE=InnoDB;""")
+try:
+    cursor.execute(create_members_table)
+    print("Table 'members' is created and ready for use.")
+except mysql.connector.Error as err:
+    if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+        print("Table 'members' is ready for use.")
     else:
         print(err.msg)
