@@ -24,7 +24,7 @@ except mysql.connector.Error as err:
 ### use attractions table
 create_attractions_table = textwrap.dedent("""\
     CREATE TABLE attractions(
-        id      BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        attrac_id      BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
         name           VARCHAR(100) NOT NULL UNIQUE,
         category       VARCHAR(100) NOT NULL,
         description    VARCHAR(5000) NOT NULL,
