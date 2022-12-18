@@ -3,142 +3,141 @@ import ast
 import mysql.connector
 from collections import namedtuple
 
-cnx = mysql.connector.connect(host="localhost", user="root", password="!QAZ-2wsx", database="taipei_attractions")
-cursor = cnx.cursor()
+query_dictionary = {}
+query_dictionary["get_attractions_with_page"] = textwrap.dedent("""
+    SELECT filtered_attractions.*, filtered_files.images
+    FROM 
+        (SELECT * FROM attractions ORDER BY attrac_id LIMIT %(start_row)s, 13
+        ) AS filtered_attractions 
+    LEFT JOIN 
+        (SELECT attrac_id, JSON_ARRAYAGG(path) AS images 
+            FROM files WHERE type='image' 
+            GROUP BY attrac_id
+        ) AS filtered_files 
+    ON filtered_files.attrac_id=filtered_attractions.attrac_id;
+    """)
+query_dictionary["get_attractions_with_page_n_keyword"] = textwrap.dedent("""
+    SELECT filtered_attractions.*, filtered_files.images
+        FROM 
+            (SELECT * FROM attractions 
+                WHERE category=%(keyword)s OR description LIKE %(keyword_like)s 
+                ORDER BY 
+                    CASE 
+                        WHEN category LIKE %(keyword_like)s THEN 0
+                        WHEN category='其　　他' THEN 2
+                        ELSE 1
+                    END
+                LIMIT %(start_row)s, 13
+            ) AS filtered_attractions 
+        LEFT JOIN 
+            (SELECT attrac_id, JSON_ARRAYAGG(path) AS images 
+                FROM files WHERE type='image' 
+                GROUP BY attrac_id
+            ) AS filtered_files 
+        ON filtered_files.attrac_id=filtered_attractions.attrac_id;
+    """)
+query_dictionary["get_attraction_wit_id"] = textwrap.dedent("""
+    SELECT attractions.*, JSON_ARRAYAGG(files.path) AS images 
+    FROM attractions LEFT JOIN files ON attractions.attrac_id=files.attrac_id 
+    WHERE attractions.attrac_id=%(id)s AND files.type='image'; 
+    """)
 
-def get_attractions(page):
-    cnx = mysql.connector.connect(host="localhost", user="root", password="!QAZ-2wsx", database="taipei_attractions")
-    cursor = cnx.cursor()
-    start_row = int(page)*12
-    query = textwrap.dedent("""
-        SELECT filtered_attractions.*, filtered_files.images
-            FROM 
-                (SELECT * FROM attractions ORDER BY id LIMIT %(start_row)s, 13
-                ) AS filtered_attractions 
-            LEFT JOIN 
-                (SELECT attrac_id, JSON_ARRAYAGG(path) AS images 
-                    FROM files WHERE type='image' 
-                    GROUP BY attrac_id
-                ) AS filtered_files 
-            ON filtered_files.attrac_id=filtered_attractions.id;
-        """)
-    cursor.execute(query, params={"start_row": start_row})
-    data = []
-    for i in cursor.fetchall():
-        result = namedtuple("data", cursor.column_names)._make(i)._asdict()
-        result["images"] = ast.literal_eval(result["images"])
-        data.append(result)
-    next_page = None if len(data)<13 else int(page)+1
-    cursor.close()
-    cnx.close()
-    return {"nextPage": next_page, "data": data[0:12]}
+def query_data(query, parameters=None):
+    try:
+        cnx = mysql.connector.connect(host="localhost", user="root", password="!QAZ-2wsx", database="taipei_attractions")
+        cursor = cnx.cursor()
+        cursor.execute(operation=query, params=parameters)
+        response = cursor.fetchall()
+        if len(response)==0:
+            cursor.close()
+            cnx.close()
+            return {"result": False, "data": None}
+        elif len(response)==1 & all(i is None for i in response[0]):
+            cursor.close()
+            cnx.close()
+            return {"result": False, "data": None}
+        else:
+            data = []
+            for i in response:
+                item = namedtuple("response", cursor.column_names)._make(i)._asdict()
+                data.append(item)
+            cursor.close()
+            cnx.close()
+            return {"result": True, "data": data}
+    except mysql.connector.Error as err:
+        return {"result": False, "data": err}
 
-def get_attractions_with_keyword(page, keyword):
-    cnx = mysql.connector.connect(host="localhost", user="root", password="!QAZ-2wsx", database="taipei_attractions")
-    cursor = cnx.cursor()
-    start_row = int(page)*12
-    query = textwrap.dedent("""
-        SELECT filtered_attractions.*, filtered_files.images
-            FROM 
-                (SELECT * FROM attractions 
-                    WHERE category=%(keyword)s OR description LIKE %(keyword_like)s 
-                    ORDER BY 
-                        CASE 
-                            WHEN category LIKE %(keyword_like)s THEN 0
-                            WHEN category='其　　他' THEN 2
-                            ELSE 1
-                        END
-                    LIMIT %(start_row)s, 13
-                ) AS filtered_attractions 
-            LEFT JOIN 
-                (SELECT attrac_id, JSON_ARRAYAGG(path) AS images 
-                    FROM files WHERE type='image' 
-                    GROUP BY attrac_id
-                ) AS filtered_files 
-            ON filtered_files.attrac_id=filtered_attractions.id;
-        """)
-    cursor.execute(query, params={"keyword": keyword, "keyword_like": "%"+keyword+"%", "start_row": start_row})
+def insert_data(query, parameters):
+    try:
+        cnx = mysql.connector.connect(host="localhost", user="root", password="!QAZ-2wsx", database="taipei_attractions")
+        cursor = cnx.cursor()
+        cursor.execute(operation=query, params=parameters)
+        cnx.commit()
+        cursor.close()
+        cnx.close()
+        return {"result": True, "data": "successfully add an item: "+str(parameters)}
+    except mysql.connector.Error as err:
+        return {"result": False, "data": err}
+
+def get_attractions(page, keyword=None):
+    if keyword==None or len(keyword)==0:
+        print("get_attractions_with_page")
+        query = query_dictionary["get_attractions_with_page"]
+        parameters = {"start_row": int(page)*12}
+    else:
+        print("get_attractions_with_page_n_keyword")
+        query = query_dictionary["get_attractions_with_page_n_keyword"]
+        parameters = {"keyword": keyword, "keyword_like": "%"+keyword+"%", "start_row": int(page)*12}
+    response = query_data(query, parameters)
     data = []
-    for i in cursor.fetchall():
-        result = namedtuple("data", cursor.column_names)._make(i)._asdict()
-        result["images"] = ast.literal_eval(result["images"])
-        data.append(result)
-    next_page = None if len(data)<13 else int(page)+1
-    cursor.close()
-    cnx.close()
-    return {"nextPage": next_page, "data": data[0:12]}
+    for i in response["data"]:
+        sub_item = dict(i)
+        sub_item["id"] = sub_item.pop("attrac_id")
+        sub_item["images"] =  ast.literal_eval(sub_item["images"])
+        data.append(sub_item)
+    nextPage = None if len(data)<13 else int(page)+1
+    return {"result": True, "data": {"nextPage": nextPage, "data": data[0:12]}}
 
 def get_attraction_with_ID(id):
-    cnx = mysql.connector.connect(host="localhost", user="root", password="!QAZ-2wsx", database="taipei_attractions")
-    cursor = cnx.cursor()
-    query = textwrap.dedent("""
-        SELECT attractions.*, JSON_ARRAYAGG(files.path) AS images 
-        FROM attractions LEFT JOIN files ON attractions.id=files.attrac_id 
-        WHERE attractions.id=%(id)s AND files.type='image'; 
-        """)
-    cursor.execute(query, params={"id": id})
-    result = cursor.fetchone()
-    data = namedtuple("data", cursor.column_names)._make(result)._asdict()
-    data["images"] = ast.literal_eval(data["images"])
-    cursor.close()
-    cnx.close()
-    return {"data": data}
+    query = query_dictionary["get_attraction_wit_id"]
+    parameters={"id": id}
+    response = query_data(query, parameters)
+    if response["result"]==False:
+        return {"result": False, "data": "no matched data"}
+    elif len(response["data"])>1:
+        return {"result": False, "data": "there are more than one data with the same id"}
+    elif len(response["data"])==1:
+        data = dict(response["data"][0])
+        data["id"] = data.pop("attrac_id")
+        data["images"] = ast.literal_eval(data["images"])
+        return {"result": True, "data": {"data": data}}
 
 def get_categories():
-    cnx = mysql.connector.connect(host="localhost", user="root", password="!QAZ-2wsx", database="taipei_attractions")
-    cursor = cnx.cursor()
     query = "SELECT DISTINCT category FROM attractions ORDER BY CASE WHEN category='其　　他' THEN 1 ELSE 0 END;"
-    cursor.execute(query)
-    result = cursor.fetchall()
-    data = []
-    [data.append(i[0]) for i in result]
-    cursor.close()
-    cnx.close()
-    return {"data": data}
+    response = query_data(query)
+    if response["result"]==True:
+        data = []
+        [data.append(i["category"]) for i in response["data"]]
+        return {"result": True, "data": {"data": data}}
+    else:
+        return {"result": False, "data": response["data"]}
 
+def get_member_data_by_email(email):
+    query = "SELECT * FROM members WHERE email=%(email)s;"
+    parameters = {"email": email}
+    response = query_data(query, parameters)
+    if response["result"]==False:
+        return {"result": False, "data": "no matched data"} 
+    elif len(response["data"])>1:
+        return {"result": False, "data": "there are more than one data with the same email"}
+    elif len(response["data"])==1:
+        return {"result": True, "data": response["data"][0]}
 
-
-# """ MySQL query with no data normalization db
-# 
-# def get_attractions(page):
-#     strat_row = int(page)*12
-#     query = "SELECT * FROM attractions ORDER BY id LIMIT %(start_row)s,12;"
-#     cursor.execute(query, params={"start_row": strat_row})
-#     data = []
-#     for i in cursor.fetchall():
-#         result = namedtuple("data", cursor.column_names)._make(i)._asdict()
-#         result["images"] = ast.literal_eval(result["images"])
-#         data.append(result)
-#     next_page = None if len(data)<12 else int(page)+1
-#     return {"nextPage": next_page, "data": data}
-# 
-# def get_attractions_with_keyword(page, keyword):
-#     start_row = int(page)*12
-#     query = textwrap.dedent("""
-#         SELECT * FROM attractions 
-#             WHERE category=%(keyword)s OR description LIKE %(keyword_like)s
-#             ORDER BY 
-#             CASE 
-#                 WHEN category LIKE %(keyword_like)s THEN 0 
-#                 ELSE 1 
-#             END
-#             LIMIT %(start_row)s,12;
-#             """)
-#     cursor.execute(query, params={"keyword": keyword, "keyword_like": "%"+keyword+"%", "start_row": start_row})
-#     data = []
-#     for i in cursor.fetchall():
-#         result = namedtuple("data", cursor.column_names)._make(i)._asdict()
-#         result["images"] = ast.literal_eval(result["images"])
-#         data.append(result)
-#     next_page = None if len(data)<12 else int(page)+1
-#     return {"nextPage": next_page, "data": data}
-# 
-# def get_attraction_with_ID(id):
-#     query = "SELECT * FROM attractions WHERE id=%(id)s"
-#     cursor.execute(query, params={"id": id})
-#     result = cursor.fetchone()
-#     data = namedtuple("data", cursor.column_names)._make(result)._asdict()
-#     data["images"] = ast.literal_eval(data["images"])
-#     return {"data": data}
-# 
-# """
+def member_sign_up(sign_up_data):
+    query = "INSERT INTO members (name, email, password) VALUES (%(name)s, %(email)s, %(password)s)"
+    parameters = sign_up_data
+    response = insert_data(query, parameters)
+    if response["result"]==True:
+        return {"result": True, "data": response["data"]}
+    else:
+        return {"result": False, "data": response["data"]}

@@ -8,6 +8,138 @@ body{
         "footer footer footer";
     margin: 0px;
 }
+div#memberPortal{
+    display: grid;
+    grid-template-columns: 1fr 340px 1fr;
+    grid-template-rows: 80px auto 1fr;
+    grid-template-areas: 
+        ". . ."
+        ". loginOrSignupWindow ."
+        ". . .";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.25);
+    /* 不使用background-color與opacity的組合，以避免子元素繼承opacity屬性的狀況 */
+    /* background-color: #000000;
+    opacity: 0.25; */
+    z-index: 3;
+}
+div#memberPortal > form{
+    grid-area: loginOrSignupWindow;
+    display: grid;
+    grid-template-columns: 310px;
+    gap: 10px 0px;
+    border-top: 10px solid transparent;                                     /* 配合background參數，設定所需的邊框 */
+    border-radius: 6px;                                                     /* 因為border的color參數無法讀取漸層函式；若使用border-image則無法設定raidus */
+    background:                                                             /* 利用以下兩個範圍的差異，做出漸層邊框效果 */
+        linear-gradient(#FFFFFF 0 0) padding-box,                         /* 包含padding所涵蓋範圍內的背景格式 */
+        linear-gradient(270deg, #337788 0%, #66AABB 100%) border-box;   /* 包含border所涵蓋範圍內的背景格式 */
+    box-shadow: 0px 4px 60px #AAAAAA;
+    padding: 15px;
+    z-index: 0;
+}
+div#memberPortal > form{
+    grid-template-rows: 32px auto;
+    grid-template-areas: 
+        "memberPortalTitle" "inputsOrOthers";
+}
+div#memberPortal > form > span{
+    grid-area: memberPortalTitle;
+    /* width: 310px;
+    height: 27px; */
+    left: 0px;
+    top: 0px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 24px;
+    align-items: start;
+    text-align: center;
+    color: #666666;
+}
+div#memberPortal > form > button#closeMemberPortal{
+    grid-area: memberPortalTitle;
+    position:relative;
+    top: 0px;
+    left: 290px;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background-color: #FFFFFF;
+    background-image: url("/static/icon_close.svg");
+    background-repeat: no-repeat;
+    background-origin: content-box;
+    padding: 2px;
+    cursor: pointer;
+}
+div#memberPortal > form > button#closeMemberPortal:hover{
+    background-color: #E8E8E8;
+}
+div#memberPortal > form > div{
+    grid-area: inputsOrOthers;
+    display: grid;
+    grid-auto-rows: auto;
+    gap: 15px;
+}
+div#memberPortal > form > div input{
+    /* box-sizing: border-box; */
+    width: 278px;
+    height: 15px;
+    background: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    align-items: center;
+    color: #757575;
+    padding: 15px;
+}
+div#memberPortal > form > div input:invalid{
+    color: crimson;
+    border: 2px solid crimson;
+}
+div#memberPortal > form > div button{
+    width: 310px;
+    height: 47px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 16px;
+    text-align: center;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    background-color: #448899;
+    cursor: pointer;
+}
+div#memberPortal > form > div button:hover{
+    background-color: #66AABB;
+}
+div#memberPortal > form > div span{
+    width: 310px;
+    height: 22px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    /* line-height: 22px; */
+    text-align: center;
+    color: #666666;
+}
+div#memberPortal > form > div span#toRegister:hover,
+div#memberPortal > form > div span#toLogin:hover{
+    font-weight: 700;
+    cursor: pointer;
+}
+div#memberPortal > form > div span.memberPortalMessage{
+    color: crimson;
+}
 a{
     color: inherit;
     text-decoration: inherit;
@@ -17,12 +149,16 @@ nav{
     display: grid;
     grid-template-columns: 1fr 150px 875px 84px 91px 1fr;
     grid-template-areas: 
-        ". navTitle . navBook navLogin .";
+        ". navTitle . navBook navMember .";
     align-items: center;
+    padding: 10px 0px;
+    position: sticky;
+    top: 0px;
+    background-color: #FFFFFF;
+    z-index: 2;
 }
 .navTitle{
     grid-area: navTitle;
-    position: relative;
     /* width: 150px;
     height: 34px; */
     font-family: 'Noto Sans TC';
@@ -31,10 +167,10 @@ nav{
     font-size: 30px;
     line-height: 34px;
     color: #448899;
+    cursor: pointer;
 }
 .navBook{
     grid-area: navBook;
-    position: relative;
     /* width: 64px;
     height: 14px; */
     font-family: 'Noto Sans TC';
@@ -44,10 +180,14 @@ nav{
     line-height: 13px;
     color: #666666;
     padding: 10px;
+    cursor: pointer;
 }
-.navLogin{  
-    grid-area: navLogin;
-    position: relative;
+.navBook:hover{
+    border-radius: 5px;
+    background-color: #E8E8E8;
+}
+#navMember{  
+    grid-area: navMember;
     /* width: 71px;
     height: 14px; */
     font-family: 'Noto Sans TC';
@@ -57,6 +197,11 @@ nav{
     line-height: 13px;
     color: #666666;
     padding: 10px;
+    cursor: pointer;
+}
+#navMember:hover{
+    border-radius: 5px;
+    background-color: #E8E8E8;
 }
 footer{
     grid-area: footer;
@@ -86,7 +231,7 @@ footer > span{
         display: grid;
         grid-template-columns: 150px 1fr 84px 91px;
         grid-template-areas: 
-            "navTitle . navBook navLogin";
+            "navTitle . navBook navMember";
         padding: 10px;
     }
 }
@@ -101,7 +246,7 @@ footer > span{
         display: grid;
         grid-template-columns: 150px 1fr 84px 91px;
         grid-template-areas: 
-            "navTitle . navBook navLogin";
+            "navTitle . navBook navMember";
         padding: 10px;
     }
 }
