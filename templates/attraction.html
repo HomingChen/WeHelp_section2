@@ -24,8 +24,8 @@
             <figure id="images">
                 <img id="lastImg" src="" alt="0">
                 <img id="currentImg" src="" alt="0"/>
-                <button id="previousImg"></button>
-                <button id="nextImg"></button>
+                <button id="previousImg" type="button"></button>
+                <button id="nextImg" type="button"></button>
                 <div id="imgList">
                     <!-- 往下自動產生圖片引索點點 -->
                 </div>
@@ -47,7 +47,7 @@
                     </div>
                     <span class="charge">導覽費用：</span>
                     <span id="charge">(請先選擇時間)</span>
-                    <button id="stratBooking" type="button" onclick="submitBookingData()">開始預約行程</button>
+                    <button id="stratBooking" type="button">開始預約行程</button>
                 </form>
             </div>
         </div>
@@ -62,155 +62,6 @@
     <footer><span>COPYRIGHT &copy; 2022 台北一日遊</span></footer>
     <!-- 取用member的javascript -->
     <script type="module" src="/static/member.js"></script>
-    <script>
-        // const attrac_id = {{id}};
-        const attrac_id = document.URL.match(/[0-9]+?$/)[0];
-        // console.log(attrac_id);
-        const attractionTab = document.getElementById("attraction");
-        const categorynMRTTab = document.getElementById("categorynMRT");
-        const descriptionTab = document.getElementById("description");
-        const addressTab = document.getElementById("address");
-        const transportTab = document.getElementById("transport");
-        const figureTab = document.getElementById("images");
-        const imgListTab = document.getElementById("imgList");
-        const imgList = [];
-        const previousImgTab = document.getElementById("previousImg");
-        const nextImgTab = document.getElementById("nextImg");
-        const tourDateTab = document.getElementById("tourDate");
-        const timeSlotTab = document.getElementsByName("timeSlot");
-        const stratBookingTab = document.getElementById("stratBooking");
-        let tourDate = "";
-        let timeSlot = "";
-        let charge = "";
-        let chargeTab = document.getElementById("charge");
-        const renderImgList = (i)=>{
-            let imgListRadioTab = document.createElement("input");
-            imgListRadioTab.setAttribute("name", "imgList");
-            imgListRadioTab.setAttribute("type", "radio");
-            imgListRadioTab.setAttribute("id", i);
-            imgListRadioTab.setAttribute("alt", i);
-            imgListTab.appendChild(imgListRadioTab);
-        };
-        const preloadingImg = (i, imgSrc)=>{
-            let img = new Image();
-            img.id = "currentImg";
-            img.src = imgSrc;
-            img.alt = i;
-            imgList.push(img);
-        };
-        const updateCurrentImg = (i)=>{
-            let currentImgTab = document.getElementById("currentImg");
-            // 把目前圖片更新為前一張圖片
-            let lastImgTab = document.getElementById("lastImg");
-            let lastImgID = currentImgTab.alt;
-            lastImgTab.setAttribute("alt", lastImgID);
-            lastImgTab.setAttribute("src", imgList[lastImgID].src);
-            // 把下一張圖片更新為目前的圖片
-            currentImgTab.replaceWith(imgList[i]);
-            // currentImgTab.setAttribute("style", `background-image: url(${imgList[lastImgID].src})`);
-            // figureTab.replaceChild(imgList[i], currentImgTab);
-            let highlightCurrentImgTab = document.getElementById(i);
-            highlightCurrentImgTab.checked = true;
-        };
-        const loadAttractData = ()=>{
-            fetch("/api/attraction/"+attrac_id, {"method": "GET"}
-                ).then(function(response){
-                    return response.json();
-                }).then(function(data){
-                    attractionTab.textContent = data["data"]["name"];
-                    categorynMRTTab.textContent = `${data["data"]["category"]} at ${data["data"]["mrt"]}`;
-                    descriptionTab.textContent = data["data"]["description"];
-                    addressTab.textContent = data["data"]["address"];
-                    transportTab.textContent = data["data"]["transport"];
-                    for(i=0; i<data["data"]["images"].length; i++){
-                        preloadingImg(i, data["data"]["images"][i]);
-                        renderImgList(i);
-                    };
-                    updateCurrentImg(0);
-                    document.getElementById(0).checked = true;
-                    // console.log(imgList);
-                });
-        };
-        const setBookingStartDate = ()=>{
-            // let today = new Date();
-            // let yyyy = today.getFullYear();
-            // let mm = String(today.getMonth()+1);
-            // let dd = String(today.getDate());
-            let currentDate = new Date().toJSON().slice(0, 10);
-            // console.log(today, yyyy, mm, dd, currentDate);
-            document.getElementById("tourDate").min = currentDate;
-        };
-        const submitBookingData = ()=>{
-            let attractionID = attrac_id;
-            let date = document.getElementById("tourDate").value;
-            let time = timeSlot;
-            let price = charge;
-            let response = {"attractionID": attractionID, "date": date, "time": time, "price": price};
-            if(date.length===0){
-                console.log("尚未選擇日期");
-                // 待完成css動畫提示
-                return "尚未選擇日期";
-            }else if(timeSlot.length===0){
-                console.log("尚未選擇時段");
-                // 待完成css動畫提示
-                return "尚未選擇時段";
-            }else{
-                console.log(response);
-                // 待完成重新導向頁面
-                return respons;
-            };
-        };
-        setBookingStartDate();
-
-        loadAttractData();
-        
-        previousImgTab.addEventListener("click", (event)=>{
-            let currentImgTab = document.getElementById("currentImg");
-            let currentImgID = parseInt(currentImgTab.getAttribute("alt"));
-            // console.log(currentImgID);
-            if(currentImgID-1>=0){
-                updateCurrentImg(currentImgID-1);
-            }else{
-                updateCurrentImg(imgList.length-1);
-            };
-            let newCurrentImgTab = document.getElementById("currentImg");
-            newCurrentImgTab.setAttribute("class","previousImg");
-        });
-
-        nextImgTab.addEventListener("click", (event)=>{
-            let imgAmount = imgList.length;
-            let currentImgTab = document.getElementById("currentImg");
-            let currentImgID = parseInt(currentImgTab.getAttribute("alt"));
-            // console.log(currentImgID);
-            if(currentImgID+1<imgAmount){
-                updateCurrentImg(currentImgID+1);
-            }else{
-                updateCurrentImg(0);
-            };
-            let newCurrentImgTab = document.getElementById("currentImg");
-            newCurrentImgTab.setAttribute("class","nextImg");
-        });
-
-        imgListTab.addEventListener("click", function(event){
-            // console.log(event.target.id);
-            if(event.target.id=="imgList"){
-                void(0);
-                // return "click wrong spot!"
-            }else{
-                updateCurrentImg(event.target.id);
-                let newCurrentImgTab = document.getElementById("currentImg");
-                newCurrentImgTab.setAttribute("class","pickImg");
-            };
-        });
-
-        for(let i=0; i<timeSlotTab.length; i++){
-            timeSlotTab[i].addEventListener("click", (event)=>{
-                timeSlot = event.target.id;
-                (timeSlot==="morning") ? charge=2000 : charge=2500;
-                chargeTab.textContent = `新台幣${charge}元`;
-            });
-        };
-
-    </script>
+    <script type="module" src="/static/attraction.js"></script>
 </body>
 </html>
