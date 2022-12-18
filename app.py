@@ -57,6 +57,20 @@ def get_categories():
 		return jsonify({"error": True, "message": "內部伺服器錯誤"}), 500
 
 @app.route("/api/user", methods=["POST"])
+def register():
+	try:
+		sign_up_data = request.get_json()
+		if False in [isNameValid(sign_up_data["name"]), isEmailValid(sign_up_data["email"]), isPasswordValid(sign_up_data["password"])]:
+			return {"error": True, "message": "註冊失敗，重複的 Email 或其他原因"}, 400
+		else:
+			result = sql.member_sign_up(sign_up_data)
+			if result["result"] == True:
+				return {"ok": True}, 200
+			else:
+				return {"error": True, "message": "註冊失敗，重複的 Email 或其他原因"}, 400
+	except:
+		return {"error": True, "message": "伺服器內部錯誤"}, 500
+
 def isNameValid(name):
 	if len(name)>0 & len(name)<=100:
 		return True
@@ -75,20 +89,6 @@ def isPasswordValid(password):
 		return True
 	else:
 		return False
-
-def register():
-	try:
-		sign_up_data = request.get_json()
-		if False in [isNameValid(sign_up_data["name"]), isEmailValid(sign_up_data["email"]), isPasswordValid(sign_up_data["password"])]:
-			return {"error": True, "message": "註冊失敗，重複的 Email 或其他原因"}, 400
-		else:
-			result = sql.member_sign_up(sign_up_data)
-			if result["result"] == True:
-				return {"ok": True}, 200
-			else:
-				return {"error": True, "message": "註冊失敗，重複的 Email 或其他原因"}, 400
-	except:
-		return {"error": True, "message": "伺服器內部錯誤"}, 500
 
 @app.route("/api/user/auth", methods=["GET"])
 def userStatusCheck():
@@ -166,25 +166,19 @@ def insertANewOrder():
 		else:
 			newOrderData = request.get_json()
 			newOrderData["member_id"] = memberData[0]["data"]["id"]
-			print(newOrderData)
 			checkNewOrderData = [
 				isTourDateValid(newOrderData["date"]),
 				isTimeSlotValid(newOrderData["time"]),
 				isExpenseValid(newOrderData["price"])
 				]
-			print(checkNewOrderData)
 			if False in checkNewOrderData:
-				print("hi")
 				return {"error": True, "message": "建立失敗，輸入不正確或其他原因"}, 400
 			else:
-				print("hi2")
 				query_response = sql.insert_a_new_order(newOrderData)
-				print(query_response)
 				if query_response["result"]==True:
-					print(query_response["result"])
 					return {"ok": True}, 200
 				else:
-					print(query_response["result"])
+					return {"error": True, "message": "伺服器內部錯誤"}, 500
 	except:
 		return {"error": True, "message": "伺服器內部錯誤"}, 500
 def isTourDateValid(tourDate):

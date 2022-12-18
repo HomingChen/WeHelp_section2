@@ -52,7 +52,7 @@ query_dictionary["get_valid_orders_by_member_id"] = textwrap.dedent("""
             LEFT JOIN cancelled_orders ON orders.order_id = cancelled_orders.order_id 
             LEFT JOIN attractions ON orders.attrac_id = attractions.attrac_id
             LEFT JOIN files ON orders.attrac_id = files.attrac_id
-        WHERE orders.member_id = 2 AND cancelled_orders.cancel_id IS NULL AND files.type = 'image';
+        WHERE orders.member_id = %(member_id)s AND cancelled_orders.cancel_id IS NULL AND files.type = 'image';
     """)
 query_dictionary["insert_a_cancelled_order"] = "INSERT INTO cancelled_orders (order_id) VALUES (%(order_id)s);"
 
@@ -95,11 +95,9 @@ def insert_data(query, parameters):
 
 def get_attractions(page, keyword=None):
     if keyword==None or len(keyword)==0:
-        print("get_attractions_with_page")
         query = query_dictionary["get_attractions_with_page"]
         parameters = {"start_row": int(page)*12}
     else:
-        print("get_attractions_with_page_n_keyword")
         query = query_dictionary["get_attractions_with_page_n_keyword"]
         parameters = {"keyword": keyword, "keyword_like": "%"+keyword+"%", "start_row": int(page)*12}
     response = query_data(query, parameters)
