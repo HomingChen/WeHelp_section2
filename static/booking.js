@@ -62,11 +62,9 @@ const bookingControl = {
             return "未登入系統，拒絕存取"
         }else if(orderData["data"]==null){
             let memberData = await memberModel.checkMemberStatus();
-            console.log(memberData);
             bookingView.noOrderInfo(memberData=memberData["data"]);
         }else if(orderData["data"]!=null){
             let memberData = await memberModel.checkMemberStatus();
-            console.log(memberData["data"]);
             bookingView.initialValidOrderInfo(memberData=memberData["data"], orderData=orderData["data"]);
         }else{
             return "內部伺服器錯誤"

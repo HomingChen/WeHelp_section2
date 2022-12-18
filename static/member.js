@@ -217,7 +217,6 @@ export const memberModel = {
         }).then((response)=>{
             return response.json();
         }).then((data)=>{
-            console.log(data);
             if("ok" in data){
                 return {"result": true, "message": "登入成功"};
             }else{

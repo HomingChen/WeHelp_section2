@@ -92,7 +92,6 @@ const attracModel = {
         return result;
     },
     async initialNewBooking(bookingData){
-        console.log(bookingData);
         let result = await fetch("/api/booking", {
             method: "POST",
             headers: {"Content-Type": "application/json", "Cookie": document.cookie},
@@ -100,7 +99,6 @@ const attracModel = {
         }).then((response)=>{
             return response.json();
         }).then((data)=>{
-            console.log(data);
             if("ok" in data){
                 return {"result": true, "message": "建立成功"};
             }else{
@@ -134,7 +132,6 @@ const attracControl = {
         return (document.querySelector("input[name='timeSlot']:checked")!=null) ? true : false;
     },
     async submitBookingData(){
-        console.log([this.isDateValid(), this.isTimeSlotAndExpenseValid()]);
         if([this.isDateValid(), this.isTimeSlotAndExpenseValid()].includes(false)){
             // console.log("資料未完整填寫");
         }else{
@@ -146,7 +143,6 @@ const attracControl = {
                 attracModel.cancelledAnOrder();
             };
             let result = await attracModel.initialNewBooking(bookingData);
-            console.log(result);
             if(result["result"]===true){
                 window.location.replace("/booking");
             }else if(result["message"]==="建立失敗，輸入不正確或其他原因"){
