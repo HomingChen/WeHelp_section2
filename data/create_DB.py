@@ -131,7 +131,7 @@ insert_contact_info_data = textwrap.dedent("""
     INSERT INTO contact_info (member_id, contact_name, contact_email, phone) 
         VALUES (%(member_id)s, %(contact_name)s, %(contact_email)s, %(phone)s);""")
 try:
-    cursor.execute(create_members_table)
+    cursor.execute(create_contact_info_table)
     print("Table 'contact_info' is created and ready for use.")
 except mysql.connector.Error as err:
     if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
@@ -154,7 +154,7 @@ create_orders_table = textwrap.dedent("""
         INDEX indexes(attrac_id, tour_date, time_slot, member_id)
     ) ENGINE=InnoDB;""")
 try:
-    cursor.execute(create_members_table)
+    cursor.execute(create_orders_table)
     print("Table 'orders' is created and ready for use.")
 except mysql.connector.Error as err:
     if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
@@ -172,7 +172,7 @@ create_cancelled_orders_table = textwrap.dedent("""
         INDEX indexes(order_id)
     ) ENGINE=InnoDB;""")
 try:
-    cursor.execute(create_members_table)
+    cursor.execute(create_cancelled_orders_table)
     print("Table 'cancelled_orders' is created and ready for use.")
 except mysql.connector.Error as err:
     if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
@@ -181,7 +181,7 @@ except mysql.connector.Error as err:
         print(err.msg)
 
 ### use payment data
-create_papment_table = textwrap.dedent("""
+create_payment_table = textwrap.dedent("""
     CREATE TABLE payment(
         payment_id  BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
         order_id    BIGINT UNSIGNED NOT NULL,
