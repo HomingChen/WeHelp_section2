@@ -37,20 +37,20 @@
                 <div id="tourAddress">{地點}</div>
                 <button id="cancel" type="button"></button>
             </div>
-            <form action="">
+            <form>
                 <div id="contactInfo">
                     <div class="bookingTitle">您的聯絡資訊</div>
                     <div>
                         <label>聯絡姓名：</label>
-                        <input id="memberName" type="text">
+                        <input id="name" type="text">
                     </div>
                     <div>
                         <label>聯絡信箱：</label>
-                        <input id="email" type="email">
+                        <input id="email" type="email" autocomplete="email" pattern="[^@]+@[^@]+">
                     </div>
                     <div>
                         <label>手機號碼：</label>
-                        <input id="phone" type="text">
+                        <input id="phone" type="text" placeholder="09********" pattern="09[0-9]{8}">
                     </div>
                     <div class="bookingMessage">
                         請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。
@@ -60,23 +60,20 @@
                     <div class="bookingTitle">信用卡付款資訊</div>
                     <div>
                         <label for="">卡片號碼：</label>
-                        <input type="text" inputmode="numeric" placeholder="**** **** **** ****" pattern="[0-9]*" maxlength="16" autocomplete="cc-number">
+                        <div class="tpfield" id="card-number"></div>
                     </div>
                     <div>
                         <label>逾期時間：</label>
-                        <span>
-                            <input id="month" type="number" min="01" max="12" inputmode="numeric" placeholder="MM" pattern="[0-1][0-9]" maxlength="2" autocomplete="cc-exp-month">/
-                            <input id="year" type="number" min="22" max="99" inputmode="numeric" placeholder="YY" pattern="[0-9]*" maxlength="2" autocomplete="cc-exp-year">
-                        </span>
+                        <div class="tpfield" id="card-expiration-date"></div>
                     </div>
                     <div>
                         <label>驗證密碼：</label>
-                        <input type="text" placeholder="CVV">
+                        <div class="tpfield" id="card-ccv"></div>
                     </div>
                 </div>
                 <div id="submitPayment">
                     <div id="price">總價：新台幣 {price} 元</div>
-                    <button type="button">確認訂購並付款</button>
+                    <button id="submit" type="button" class="btn btn-default">確認訂購並付款</button>
                 </div>
             </form>
         </div>
@@ -84,5 +81,7 @@
     <footer id="footer"><span>COPYRIGHT &copy; 2022 台北一日遊</span></footer>
     <script type="module" src="/static/member.js"></script>
     <script type="module" src="/static/booking.js"></script>
+    <!-- 載入TapPay的套件 -->
+    <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.14.0"></script>
 </body>
 </html>

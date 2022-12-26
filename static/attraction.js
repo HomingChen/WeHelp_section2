@@ -66,10 +66,6 @@ const attracModel = {
         let result = await fetch("/api/booking", {
             method: "GET",
             headers: {"Cookie": document.cookie}
-        }).then((response)=>{
-            return response.json();
-        }).then((data)=>{
-            return data;
         }).catch((error)=>{
             console.log("function 'getOrderData' error:", error)
         });
@@ -138,7 +134,15 @@ const attracControl = {
             // console.log("收集資料");
             let bookingData = attracModel.collectBookingInput();
             // console.log(bookingData);
-            let orderData = await attracModel.getOrderData();
+            let orderData = await attracModel.getOrderData().then((response)=>{
+                if(response.redirected==true){
+                    window.location.replace(response.url);
+                }else{
+                    return response.json();
+                };
+            }).then((data)=>{
+                return data;
+            });
             if(orderData["data"]!=null){
                 attracModel.cancelledAnOrder();
             };

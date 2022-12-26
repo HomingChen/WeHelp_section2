@@ -183,13 +183,21 @@ except mysql.connector.Error as err:
 ### use payment data
 create_payment_table = textwrap.dedent("""
     CREATE TABLE payment(
-        payment_id  BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-        order_id    BIGINT UNSIGNED NOT NULL,
-        contact_id  BIGINT UNSIGNED NOT NULL,
-        card_id     VARCHAR(16) NOT NULL,
-        pay_date    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        payment_id      BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        order_id        BIGINT UNSIGNED NOT NULL,
+        contact_id      BIGINT UNSIGNED NOT NULL,
+        card_last_four  VARCHAR(16) NOT NULL,
+        pay_status      BOOLEAN NOT NULL,
+        pay_time        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(order_id) REFERENCES orders(order_id),
         FOREIGN KEY(contact_id) REFERENCES contact_info(contact_id),
-        INDEX indexes(order_id, contact_id, card_id)
+        INDEX indexes(order_id, contact_id, card_last_four, pay_status)
     ) ENGINE=InnoDB;""")
-
+try:
+    cursor.execute(create_payment_table)
+    print("Table 'payment' is created and ready for use.")
+except mysql.connector.Error as err:
+    if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+        print("Table 'payment' is ready for use.")
+    else:
+        print(err.msg)

@@ -47,14 +47,47 @@ query_dictionary["insert_a_new_order"] = textwrap.dedent("""
         VALUES (%(attractionID)s, %(date)s, %(time)s, %(price)s, %(member_id)s);
     """)
 query_dictionary["get_valid_orders_by_member_id"] = textwrap.dedent("""
-    SELECT orders.*, cancelled_orders.cancel_id, attractions.name, attractions.address, JSON_ARRAYAGG(files.path) AS images 
+    SELECT orders.*, cancelled_orders.cancel_id, attractions.name, attractions.address, JSON_ARRAYAGG(files.path) AS images, payment.pay_status
         FROM orders 
             LEFT JOIN cancelled_orders ON orders.order_id = cancelled_orders.order_id 
             LEFT JOIN attractions ON orders.attrac_id = attractions.attrac_id
             LEFT JOIN files ON orders.attrac_id = files.attrac_id
+            LEFT JOIN payment ON orders.order_id = payment.order_id
         WHERE orders.member_id = %(member_id)s AND cancelled_orders.cancel_id IS NULL AND files.type = 'image';
     """)
 query_dictionary["insert_a_cancelled_order"] = "INSERT INTO cancelled_orders (order_id) VALUES (%(order_id)s);"
+query_dictionary["get_contact_info_by_member_id_name_email_phone"] = textwrap.dedent("""
+    SELECT * FROM contact_info 
+        WHERE member_id=%(member_id)s AND contact_name=%(name)s AND contact_email=%(email)s AND phone=%(phone)s;
+    """)
+query_dictionary["insert_a_contact_info"] = textwrap.dedent("""
+    INSERT INTO contact_info (member_id, contact_name, contact_email, phone) 
+        VALUES (%(member_id)s, %(name)s, %(email)s, %(phone)s);
+    """)
+query_dictionary["insert_a_payment_record"] = textwrap.dedent("""
+    INSERT INTO payment(order_id, contact_id, card_last_four, pay_status, pay_time) 
+        VALUES (%(order_id)s, %(contact_id)s, %(card_last_four)s, %(pay_status)s, %(pay_time)s);
+    """)
+query_dictionary["get_payment_result_by_order_id"] = textwrap.dedent("""
+    SELECT order_data.*, attraction_data.name, attraction_data.address, attraction_data.image
+        FROM 
+            (SELECT payment.*, contact_info.contact_name, contact_info.contact_email, contact_info.phone, 
+                orders.attrac_id, orders.tour_date, orders.time_slot, orders.expense
+            FROM payment
+                LEFT JOIN contact_info ON payment.contact_id = contact_info.contact_id
+                LEFT JOIN orders ON payment.order_id = orders.order_id
+            WHERE orders.order_id = %(order_id)s
+            ) AS order_data
+        INNER JOIN 
+            (SELECT orders.order_id, attractions.name, attractions.address, files.path AS image 
+            FROM orders
+                LEFT JOIN attractions ON orders.attrac_id = attractions.attrac_id
+                LEFT JOIN files ON files.attrac_id = orders.attrac_id
+            WHERE orders.order_id = %(order_id)s
+            ORDER BY order_id LIMIT 1
+            ) AS attraction_data
+        ON order_data.order_id = attraction_data.order_id;
+    """)
 
 def query_data(query, parameters=None):
     try:
@@ -176,6 +209,46 @@ def cancelled_an_order(order_id):
     query = query_dictionary["insert_a_cancelled_order"]
     parameters = {"order_id": order_id}
     response = insert_data(query, parameters)
+    if response["result"]==True:
+        return {"result": True, "data": response["data"]}
+    else:
+        return {"result": False, "data": response["data"]}
+
+def is_contact_info_duplicated(contactData):
+    query = query_dictionary["get_contact_info_by_member_id_name_email_phone"]
+    parameters = contactData
+    response = query_data(query, parameters)
+    if response["result"]==True:
+        return {"result": True, "data": response["data"]}
+    else:
+        return {"result": False, "data": response["data"]}
+
+def insert_a_contact_info(contactData):
+    query = query_dictionary["insert_a_contact_info"]
+    parameters = contactData
+    response = insert_data(query, parameters)
+    print(response)
+    if response["result"]==True:
+        print("true")
+        data = is_contact_info_duplicated(contactData)["data"]
+        return {"result": True, "data": data}
+    else:
+        print("false")
+        return {"result": False, "data": response["data"]}
+
+def insert_a_payment_record(paymentRecord):
+    query = query_dictionary["insert_a_payment_record"]
+    parameters = paymentRecord
+    response = insert_data(query, parameters)
+    if response["result"]==True:
+        return {"result": True, "data": response["data"]}
+    else:
+        return {"result": False, "data": response["data"]}
+
+def get_payment_result_by_order_id(order_id):
+    query = query_dictionary["get_payment_result_by_order_id"]
+    parameters = {"order_id": order_id}
+    response = query_data(query, parameters)
     if response["result"]==True:
         return {"result": True, "data": response["data"]}
     else:
