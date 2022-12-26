@@ -1,6 +1,7 @@
 import textwrap
 import ast
 import mysql.connector
+import datetime
 from collections import namedtuple
 
 query_dictionary = {}
@@ -36,11 +37,24 @@ query_dictionary["get_attractions_with_page_n_keyword"] = textwrap.dedent("""
             ) AS filtered_files 
         ON filtered_files.attrac_id=filtered_attractions.attrac_id;
     """)
-query_dictionary["get_attraction_wit_id"] = textwrap.dedent("""
+query_dictionary["get_attraction_with_id"] = textwrap.dedent("""
     SELECT attractions.*, JSON_ARRAYAGG(files.path) AS images 
     FROM attractions LEFT JOIN files ON attractions.attrac_id=files.attrac_id 
     WHERE attractions.attrac_id=%(id)s AND files.type='image'; 
     """)
+query_dictionary["insert_a_new_order"] = textwrap.dedent("""
+    INSERT INTO orders (attrac_id, tour_date, time_slot, expense, member_id) 
+        VALUES (%(attractionID)s, %(date)s, %(time)s, %(price)s, %(member_id)s);
+    """)
+query_dictionary["get_valid_orders_by_member_id"] = textwrap.dedent("""
+    SELECT orders.*, cancelled_orders.cancel_id, attractions.name, attractions.address, JSON_ARRAYAGG(files.path) AS images 
+        FROM orders 
+            LEFT JOIN cancelled_orders ON orders.order_id = cancelled_orders.order_id 
+            LEFT JOIN attractions ON orders.attrac_id = attractions.attrac_id
+            LEFT JOIN files ON orders.attrac_id = files.attrac_id
+        WHERE orders.member_id = %(member_id)s AND cancelled_orders.cancel_id IS NULL AND files.type = 'image';
+    """)
+query_dictionary["insert_a_cancelled_order"] = "INSERT INTO cancelled_orders (order_id) VALUES (%(order_id)s);"
 
 def query_data(query, parameters=None):
     try:
@@ -81,11 +95,9 @@ def insert_data(query, parameters):
 
 def get_attractions(page, keyword=None):
     if keyword==None or len(keyword)==0:
-        print("get_attractions_with_page")
         query = query_dictionary["get_attractions_with_page"]
         parameters = {"start_row": int(page)*12}
     else:
-        print("get_attractions_with_page_n_keyword")
         query = query_dictionary["get_attractions_with_page_n_keyword"]
         parameters = {"keyword": keyword, "keyword_like": "%"+keyword+"%", "start_row": int(page)*12}
     response = query_data(query, parameters)
@@ -99,7 +111,7 @@ def get_attractions(page, keyword=None):
     return {"result": True, "data": {"nextPage": nextPage, "data": data[0:12]}}
 
 def get_attraction_with_ID(id):
-    query = query_dictionary["get_attraction_wit_id"]
+    query = query_dictionary["get_attraction_with_id"]
     parameters={"id": id}
     response = query_data(query, parameters)
     if response["result"]==False:
@@ -134,8 +146,35 @@ def get_member_data_by_email(email):
         return {"result": True, "data": response["data"][0]}
 
 def member_sign_up(sign_up_data):
-    query = "INSERT INTO members (name, email, password) VALUES (%(name)s, %(email)s, %(password)s)"
+    query = "INSERT INTO members (name, email, password) VALUES (%(name)s, %(email)s, %(password)s);"
     parameters = sign_up_data
+    response = insert_data(query, parameters)
+    if response["result"]==True:
+        return {"result": True, "data": response["data"]}
+    else:
+        return {"result": False, "data": response["data"]}
+
+def insert_a_new_order(new_order_data):
+    query = query_dictionary["insert_a_new_order"]
+    parameters = new_order_data
+    response = insert_data(query, parameters)
+    if response["result"]==True:
+        return {"result": True, "data": {"ok": True}}
+    else:
+        return {"result": False, "data": response["data"]}
+
+def get_valid_orders_by_member_id(member_id):
+    query = query_dictionary["get_valid_orders_by_member_id"]
+    parameters = {"member_id": member_id}
+    response = query_data(query, parameters)
+    if response["result"]==False:
+        return {"result": False, "data": response["data"]}
+    else:
+        return {"result": True, "data": response["data"]}
+
+def cancelled_an_order(order_id):
+    query = query_dictionary["insert_a_cancelled_order"]
+    parameters = {"order_id": order_id}
     response = insert_data(query, parameters)
     if response["result"]==True:
         return {"result": True, "data": response["data"]}

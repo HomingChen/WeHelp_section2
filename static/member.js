@@ -1,5 +1,5 @@
 const navMemberTab = document.getElementById("navMember");
-const view = {
+export const memberView = {
     initalMemberPortal(){
         let memberPortalTab = document.createElement("div");
         memberPortalTab.setAttribute("id", "memberPortal");
@@ -127,9 +127,13 @@ const view = {
         // alertTab.setAttribute("class", "alert");
         // alertTab.innerText = message;
         // document.body.appendChild(alertTab);
-    }
+    },
+    cleanInputValue(inputTabID){
+        let inputTab = document.getElementById(inputTabID);
+        inputTab.innerText = null;
+    },
 };
-const model = {
+export const memberModel = {
     isNameValid(){
         let name = document.getElementById("name").value;
         if(name.length>0 && name.length<=100){
@@ -196,9 +200,9 @@ const model = {
             return response.json();
         }).then((data)=>{
             if(data["data"]!=null){
-                return true;
+                return {"result": true, "data": data["data"]};
             }else{
-                return false;
+                return {"result": false, "data": null};
             };
         }).catch((error)=>{
             console.log("function 'checkMemberStatus' error:", error);
@@ -213,7 +217,6 @@ const model = {
         }).then((response)=>{
             return response.json();
         }).then((data)=>{
-            console.log(data);
             if("ok" in data){
                 return {"result": true, "message": "登入成功"};
             }else{
@@ -268,83 +271,99 @@ const model = {
     //     return JSON.parse(jsonPayload);
     // }
 };
-const control = {
+export const memberControl = {
     async initialMemberStatus(){
-        let memberStatus = await model.checkMemberStatus();
-        if(memberStatus===true){
-            view.memberLogedIn();
+        let memberStatus = await memberModel.checkMemberStatus();
+        if(memberStatus["result"]===true){
+            memberView.memberLogedIn();
+            return "logedIn";
         }else{
-            view.memberLogedOut();
+            memberView.memberLogedOut();
+            return "logedOut";
         };
     },
     async login(){
-        let data = model.collectingLoginData()["data"];
+        let data = memberModel.collectingLoginData()["data"];
         if(data===null){
             let message = "請輸入會員資料";
-            view.showMemberPortalMessage(message);
+            memberView.showMemberPortalMessage(message);
         }else if(data!=null){
-            if(false in [model.isEmailValid(), model.isPasswordValid()]){
+            if([memberModel.isEmailValid(), memberModel.isPasswordValid()].includes(false)){
                 return false;
-            }else if(model.isEmailValid()===true && model.isPasswordValid()===true){
-                let response = await model.requestLogIn(data);
+            }else if(memberModel.isEmailValid()===true && memberModel.isPasswordValid()===true){
+                let response = await memberModel.requestLogIn(data);
                 if(response["result"]===true){
-                    view.closeMemberPortal();
-                    view.memberAlert("登入成功")
-                    view.memberLogedIn();
+                    memberView.closeMemberPortal();
+                    memberView.memberAlert("登入成功")
+                    memberView.memberLogedIn();
                 }else{
-                    view.showMemberPortalMessage(response["message"]);
+                    memberView.showMemberPortalMessage(response["message"]);
                 };
             };
         };
     },
     async signUp(){
-        let data = model.collectingSignUpData()["data"];
+        let data = memberModel.collectingSignUpData()["data"];
         if(data===null){
             let message = "請確認註冊資料是否完整填寫";
-            view.showMemberPortalMessage(message);
+            memberView.showMemberPortalMessage(message);
         }else{
-            let result = await model.requestSignUp(data);
+            let result = await memberModel.requestSignUp(data);
             // console.log("the result of sign up is:", result);
             if(result["result"]===true){
-                view.toLogin();
+                memberView.toLogin();
                 let message = "註冊成功，請立即登入"
-                view.showMemberPortalMessage(message);
+                memberView.showMemberPortalMessage(message);
             }else{
                 let message = result["message"];
                 // console.log("message:", message);
-                view.showMemberPortalMessage(message);
+                memberView.showMemberPortalMessage(message);
             };
         };
     },
     async logout(){
-        let result = await model.requestLogOut();
+        let result = await memberModel.requestLogOut();
         if(result["result"]===true){
-            view.memberLogedOut();
-            view.memberAlert(result["message"]);
+            memberView.memberLogedOut();
+            memberView.memberAlert(result["message"]);
+            window.location.replace("/");
         };
-    }
+    },
+    async toBooking(){
+        let memberStatus = await memberModel.checkMemberStatus();
+        if(memberStatus["result"]===false){
+            memberView.initalMemberPortal();
+            memberView.showMemberPortalMessage("請先登入/註冊會員");
+            return "請先登入/註冊會員";
+        }else if(memberStatus["data"]!=null){
+            window.location.replace("/booking");
+            return "成功轉跳";
+        };
+    },
 };
 
-control.initialMemberStatus();
+memberControl.initialMemberStatus();
 window.addEventListener("click", (event)=>{
     // console.log(event.target.id);
     if(event.target.innerText==="登入/註冊"){
         event.preventDefault();
         event.stopPropagation();
-        view.initalMemberPortal();
+        memberView.initalMemberPortal();
     }else if(event.target.innerText==="登出系統"){
-        control.logout();
+        memberControl.logout();
     }else if(event.target.id==="closeMemberPortal"){
-        view.closeMemberPortal();
+        memberView.closeMemberPortal();
     }else if(event.target.id==="toRegister"){
-        view.toSignUp();
+        memberView.toSignUp();
     }else if(event.target.id==="toLogin"){
-        view.toLogin();
+        memberView.toLogin();
     }else if(event.target.id==="loginBtn"){
-        model.isEmailValid();
-        model.isPasswordValid();
-        control.login();
+        memberModel.isEmailValid();
+        memberModel.isPasswordValid();
+        memberControl.login();
     }else if(event.target.id==="signUpBtn"){
-        control.signUp();
+        memberControl.signUp();
+    }else if(event.target.innerText==="預定行程"){
+        memberControl.toBooking();
     };
 });

@@ -1,4 +1,5 @@
 from flask import *
+import ast
 import jwt
 import sql
 import re
@@ -111,8 +112,10 @@ def login():
 		elif query_response["data"]["password"]!=login_data["password"]:
 			return {"error": True, "message": "登入失敗，帳號或密碼錯誤或其他原因"}, 400
 		elif query_response["data"]["password"]==login_data["password"]:
-			response_data = {"id": query_response["data"]["member_id"], 
-				"name": query_response["data"]["name"], "email": query_response["data"]["email"]}
+			response_data = {
+				"id": query_response["data"]["member_id"], 
+				"name": query_response["data"]["name"], 
+				"email": query_response["data"]["email"]}
 			response_cookie_encoded = jwt.encode(response_data, key, "HS256")					# 此處的key是指加密的key
 			response = make_response({"ok": True})
 			response.set_cookie(key="status", value=response_cookie_encoded, max_age=604800)	# 此處的key是指cookie的key
@@ -125,5 +128,92 @@ def logout():
 	response = make_response({"ok": True})
 	response.set_cookie(key="status", value="", max_age=-1)
 	return response, 200
+
+@app.route("/api/booking", methods=["GET"])
+def getOrderData():
+	try:
+		memberData = userStatusCheck()
+		if memberData[0]["data"]==None:
+			return {"error": True, "message": "未登入系統，拒絕存取"}, 403
+		else:
+			orderData = sql.get_valid_orders_by_member_id(memberData[0]["data"]["id"])
+			print(orderData)
+			if orderData["result"]==True:
+				data = {
+					"attraction": {
+						"id": orderData["data"][0]["attrac_id"],
+						"name": orderData["data"][0]["name"],
+						"address": orderData["data"][0]["address"],
+						"image": ast.literal_eval(orderData["data"][0]["images"])[0]
+					},
+					"date": str(orderData["data"][0]["tour_date"]),
+					"time": orderData["data"][0]["time_slot"],
+					"price": orderData["data"][0]["expense"] 
+				}
+				print(data)
+				return {"data": data}, 200
+			else:
+				return {"data": None}, 200
+	except:
+		return {"error": True, "message": "伺服器內部錯誤"}, 500
+
+@app.route("/api/booking", methods=["POST"])
+def insertANewOrder():
+	try:
+		memberData = userStatusCheck()
+		if memberData[0]["data"]==None:
+			return {"error": True, "message": "未登入系統，拒絕存取"}, 403
+		else:
+			newOrderData = request.get_json()
+			newOrderData["member_id"] = memberData[0]["data"]["id"]
+			checkNewOrderData = [
+				isTourDateValid(newOrderData["date"]),
+				isTimeSlotValid(newOrderData["time"]),
+				isExpenseValid(newOrderData["price"])
+				]
+			if False in checkNewOrderData:
+				return {"error": True, "message": "建立失敗，輸入不正確或其他原因"}, 400
+			else:
+				query_response = sql.insert_a_new_order(newOrderData)
+				if query_response["result"]==True:
+					return {"ok": True}, 200
+				else:
+					return {"error": True, "message": "伺服器內部錯誤"}, 500
+	except:
+		return {"error": True, "message": "伺服器內部錯誤"}, 500
+def isTourDateValid(tourDate):
+	if len(tourDate)>0:
+		return True
+	else:
+		return False
+
+def isTimeSlotValid(timeSlot):
+	if timeSlot=="morning" or timeSlot=="afternoon":
+		return True
+	else:
+		return False
+
+def isExpenseValid(expense):
+	if len(expense)>0:
+		return True
+	else:
+		return False
+
+@app.route("/api/booking", methods=["DELETE"])
+def cancelledAnOrder():
+	try:
+		memberData = userStatusCheck()
+		if memberData[0]["data"]==None:
+			return {"error": True, "message": "未登入系統，拒絕存取"}, 403
+		else:
+			orderData = sql.get_valid_orders_by_member_id(memberData[0]["data"]["id"])
+			if orderData["result"]==True:
+				for i in orderData["data"]:
+					if i["cancel_id"]==None:
+						sql.cancelled_an_order(i["order_id"])
+						print("order_id:", i["order_id"], "is cancelled.")
+			return {"ok": True}
+	except:
+		return {"error": True, "message": "伺服器內部錯誤"}, 500
 
 app.run(host="0.0.0.0", port=3000)

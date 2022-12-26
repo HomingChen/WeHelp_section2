@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 取用google "Noto Sans TC字體" -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 取用CSS設定 -->
+    <link rel="stylesheet" type="text/css" href="/static/common.css">
+    <link rel="stylesheet" type="text/css" href="/static/booking.css">
+    <title>台北一日遊</title>
+</head>
+<body>
+    <nav>
+        <span class="navTitle"><a href="/">台北一日遊</a></span>
+        <span class="navBook">預定行程</span>
+        <span id="navMember"></span>
+    </nav>
+    <div class="mainContent" id="mainContent">
+        <div id="title">
+            您好，{memberName}，待訂的行程如下：
+        </div>
+        <div id="order">
+            <div id="tourInfo">
+                <img id="img" src="" alt=""/>
+                <span id="tourPlace">台北一日遊：</span>
+                <span class="tourDateTitle">日期：</span>
+                <div id="tourDate">{日期}</div>
+                <span class="tourTimeTitle">時間：</span>
+                <div id="tourTime">{時間}</div>
+                <span class="tourPriceTitle">費用：</span>
+                <div id="tourPrice">{費用}</div>
+                <span class="tourAddressTitle">地點：</span>
+                <div id="tourAddress">{地點}</div>
+                <button id="cancel" type="button"></button>
+            </div>
+            <form action="">
+                <div id="contactInfo">
+                    <div class="bookingTitle">您的聯絡資訊</div>
+                    <div>
+                        <label>聯絡姓名：</label>
+                        <input id="memberName" type="text">
+                    </div>
+                    <div>
+                        <label>聯絡信箱：</label>
+                        <input id="email" type="email">
+                    </div>
+                    <div>
+                        <label>手機號碼：</label>
+                        <input id="phone" type="text">
+                    </div>
+                    <div class="bookingMessage">
+                        請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。
+                    </div>
+                </div>
+                <div id="paymentInfo">
+                    <div class="bookingTitle">信用卡付款資訊</div>
+                    <div>
+                        <label for="">卡片號碼：</label>
+                        <input type="text" inputmode="numeric" placeholder="**** **** **** ****" pattern="[0-9]*" maxlength="16" autocomplete="cc-number">
+                    </div>
+                    <div>
+                        <label>逾期時間：</label>
+                        <span>
+                            <input id="month" type="number" min="01" max="12" inputmode="numeric" placeholder="MM" pattern="[0-1][0-9]" maxlength="2" autocomplete="cc-exp-month">/
+                            <input id="year" type="number" min="22" max="99" inputmode="numeric" placeholder="YY" pattern="[0-9]*" maxlength="2" autocomplete="cc-exp-year">
+                        </span>
+                    </div>
+                    <div>
+                        <label>驗證密碼：</label>
+                        <input type="text" placeholder="CVV">
+                    </div>
+                </div>
+                <div id="submitPayment">
+                    <div id="price">總價：新台幣 {price} 元</div>
+                    <button type="button">確認訂購並付款</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <footer id="footer"><span>COPYRIGHT &copy; 2022 台北一日遊</span></footer>
+    <script type="module" src="/static/member.js"></script>
+    <script type="module" src="/static/booking.js"></script>
+</body>
+</html>

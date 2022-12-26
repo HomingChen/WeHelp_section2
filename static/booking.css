@@ -1,0 +1,337 @@
+.mainContent{
+    grid-area: mainContent;
+    display: grid;
+    grid-template-columns: 1fr 1200px 1fr;
+    grid-template-rows: 97px auto;
+    grid-template-areas: 
+        ". title ."
+        ". order .";
+    background-color: #FFFFFF;
+}
+.mainContent > div#title{
+    grid-area: title;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 16px;
+    color: #666666;
+    padding: 46px 100px 35px 100px;
+}
+.mainContent > div#order{
+    grid-area: order;
+    display: grid;
+    grid-template-columns: 110px 1fr 110px;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+        ". tuorInfo ."
+        ". form .";
+}
+.mainContent > div#order > div#tourInfo{
+    grid-area: tuorInfo;
+    display: grid;
+    grid-template-columns: 250px 30px 48px 5px 1fr 30px 30px;
+    grid-template-rows: 49px 14px 20px 14px 20px 14px 20px 14px 30px 40px;
+    grid-template-areas: 
+        "attracImg . tourPlace tourPlace tourPlace . delete"
+        "attracImg . tourDateTitle . tourDate . ."
+        "attracImg . . . . . ."
+        "attracImg . tourTimeTitle . tourTime . ."
+        "attracImg . . . . . ."
+        "attracImg . tourPriceTitle . tourPrice . ."
+        "attracImg . . . . . ."
+        "attracImg . tourAddressTitle . tourAddress . ."
+        "attracImg . . . . . ."
+        ". . . . . . .";
+}
+div#tourInfo > img{
+    grid-area: attracImg;
+    width: 250px;
+    height: 195px;
+    padding: 0px;
+    object-fit: cover;
+}
+div#tourInfo > span{
+    width: 48px;
+    height: 14px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    align-items: center;
+    color: #666666;
+}
+div#tourInfo > div{
+    /* width: 48px;
+    height: 14px; */
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    align-items: center;
+    color: #666666;
+}
+div#tourInfo > span#tourPlace{
+    grid-area: tourPlace;
+    width: auto;
+    height: 14px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    align-items: center;
+    color: #448899;
+}
+div#tourInfo > span.tourDateTitle{
+    grid-area: tourDateTitle;
+}
+div#tourInfo > div#tourDate{
+    grid-area: tourDate;
+}
+div#tourInfo > span.tourTimeTitle{
+    grid-area: tourTimeTitle;
+}
+div#tourInfo > div#tourTime{
+    grid-area: tourTime;
+}
+div#tourInfo > span.tourPriceTitle{
+    grid-area: tourPriceTitle;
+}
+div#tourInfo > div#tourPrice{
+    grid-area: tourPrice;
+}
+div#tourInfo > span.tourAddressTitle{
+    grid-area: tourAddressTitle;
+}
+div#tourInfo > div#tourAddress{
+    grid-area: tourAddress;
+}
+div#tourInfo > button{
+    grid-area: delete;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: #FFFFFF;
+    background-image: url("/static/icon_delete.svg");
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+div#tourInfo > button:hover{
+    background-color: #E8E8E8;
+    border-radius: 5px;
+}
+.mainContent > div#order > form{
+    grid-area: form;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas: "contactInfo" "paymentInfo" "submitPayment";
+}
+form div#contactInfo{
+    grid-area: contactInfo;
+    border-top: 1px solid #e8e8e8;
+}
+form div#paymentInfo{
+    grid-area: paymentInfo;
+    border-top: 1px solid #e8e8e8;
+}
+form div{
+    padding: 44px 0px 40px 0px;
+}
+form div div.bookingTitle{
+    width: auto;
+    height: 16px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 16px;
+    align-items: center;
+    color: #666666;
+    padding: 0px;
+    margin: 0px 0px 24px 0px;
+}
+form div div{
+    padding: 0px;
+    margin: 15px 0px;
+}
+form div div label{
+    width: 81px;
+    height: 24px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    align-items: center;
+    color: #666666;
+    margin: 0px;
+    padding: 0px;
+}
+form div div > input{
+    width: 180px;
+    height: 18px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    align-items: center;
+    color: #000000;
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    border-radius: 5px;
+    padding: 10px;
+}
+form div div > span{
+    display: inline-block;
+    width: 200px;
+    height: 38px;
+    border: 1px solid #E8E8E8;
+    border-radius: 5px;
+    padding: 0px;
+}
+form div div > span > input{
+    width: 75px;
+    height: 18px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    text-align: center;
+    background: #FFFFFF;
+    border: none;
+    color: #000000;
+    padding: 10px;
+}
+form div div > span > span{
+    grid-area: slash;
+    width: 5px;
+    height: 18px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    color: #666666;
+    padding: 0px 10px;
+}
+form div div label input::placeholder{
+    color: #757575;
+}
+form div div.bookingMessage{
+    width: auto;
+    height: auto;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 23px;
+    align-items: center;
+    color: #666666;
+    margin: 20px 0px 5px 0px;
+}
+form div#submitPayment{
+    grid-area: submitPayment;
+    border-top: 1px solid #e8e8e8;
+}
+form div#submitPayment{
+    text-align: right;
+    padding: 43px 0px 62px 0px;
+}
+form div#submitPayment div{
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 13px;
+    color: #666666;
+    margin: 0px 0px 25px 0px;
+}
+form div#submitPayment button{
+    width: 173px;
+    height: 36px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 16px;
+    align-items: center;
+    text-align: center;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    background: #448899;
+}
+.mainContent > div#noOrder{
+    grid-area: order;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+    color: #666666;
+    margin: 35px 0px 40px 100px;
+}
+@media(max-width:1200px){
+    .mainContent{
+        grid-template-columns: 1fr 700px 1fr;
+    }
+    .mainContent > div#title{
+        padding: 46px 10px 35px 10px;
+    }
+    .mainContent > div#order{
+        grid-template-columns: 10px 1fr 10px;
+    }
+    .mainContent > div#order > form{
+        grid-template-columns: 1fr;
+    }
+    .mainContent > div#noOrder{
+        margin: 35px 0px 40px 10px;
+    }
+}
+@media(max-width:700px){
+    .mainContent{
+        grid-template-columns: 1fr 360px 1fr;
+    }
+    .mainContent > div#title{
+        padding: 46px 10px 35px 10px;
+    }
+    .mainContent > div#order{
+        grid-template-columns: 10px 1fr 10px;
+    }
+    .mainContent > div#order > div#tourInfo{
+        grid-template-columns: 48px 5px 257px 30px;
+        grid-template-rows: 256px 7px 14px 30px 14px 20px 14px 20px 14px 20px 14px 5px 30px 30px;
+        grid-template-areas: 
+            "attracImg attracImg attracImg attracImg"
+            ". . . ."
+            "tourPlace tourPlace tourPlace tourPlace"
+            ". . . ."
+            "tourDateTitle . tourDate tourDate"
+            ". . . ."
+            "tourTimeTitle . tourTime tourTime"
+            ". . . ."
+            "tourPriceTitle . tourPrice tourPrice"
+            ". . . ."
+            "tourAddressTitle . tourAddress tourAddress"
+            ". . . ."
+            ". . . delete"
+            ". . . .";
+    }
+    div#tourInfo > img{
+        width: 340px;
+        height: 200px;
+        padding: 28px 0px;
+        object-fit: cover;
+    }
+    .mainContent > div#order > form{
+        grid-template-columns: 340px;
+    }
+    .mainContent > div#noOrder{
+        margin: 35px 0px 40px 10px;
+    }
+}
