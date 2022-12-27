@@ -160,16 +160,15 @@ form div div{
 }
 form div div label{
     width: 81px;
-    height: 24px;
+    height: 16px;
     font-family: 'Noto Sans TC';
     font-style: normal;
     font-weight: 500;
     font-size: 16px;
     line-height: 13px;
-    align-items: center;
     color: #666666;
     margin: 0px;
-    padding: 0px;
+    padding: 12px 0px;
 }
 form div div > input{
     width: 180px;
@@ -283,6 +282,10 @@ form div#submitPayment button:hover{
     line-height: 13px;
     color: #666666;
     margin: 35px 0px 40px 100px;
+}
+form div#paymentInfo > div{
+    display: flex;
+    flex-direction: row;
 }
 .tpfield{
     width: 180px;
