@@ -55,6 +55,16 @@ query_dictionary["get_valid_orders_by_member_id"] = textwrap.dedent("""
             LEFT JOIN payment ON orders.order_id = payment.order_id
         WHERE orders.member_id = %(member_id)s AND cancelled_orders.cancel_id IS NULL AND files.type = 'image';
     """)
+query_dictionary["get_last_unpaid_order_by_member_id"] = textwrap.dedent("""
+    SELECT orders.*, cancelled_orders.cancel_id, attractions.name, attractions.address, JSON_ARRAYAGG(files.path) AS images, payment.pay_status
+        FROM orders 
+            LEFT JOIN cancelled_orders ON orders.order_id = cancelled_orders.order_id 
+            LEFT JOIN attractions ON orders.attrac_id = attractions.attrac_id
+            LEFT JOIN files ON orders.attrac_id = files.attrac_id
+            LEFT JOIN payment ON orders.order_id = payment.order_id
+        WHERE orders.member_id = %(member_id)s AND cancelled_orders.cancel_id IS NULL AND files.type = 'image' AND payment.pay_status IS NULL 
+        ORDER BY order_id DESC LIMIT 1;
+    """)
 query_dictionary["insert_a_cancelled_order"] = "INSERT INTO cancelled_orders (order_id) VALUES (%(order_id)s);"
 query_dictionary["get_contact_info_by_member_id_name_email_phone"] = textwrap.dedent("""
     SELECT * FROM contact_info 
@@ -198,6 +208,15 @@ def insert_a_new_order(new_order_data):
 
 def get_valid_orders_by_member_id(member_id):
     query = query_dictionary["get_valid_orders_by_member_id"]
+    parameters = {"member_id": member_id}
+    response = query_data(query, parameters)
+    if response["result"]==False:
+        return {"result": False, "data": response["data"]}
+    else:
+        return {"result": True, "data": response["data"]}
+
+def get_last_unpaid_order_by_member_id(member_id):
+    query = query_dictionary["get_last_unpaid_order_by_member_id"]
     parameters = {"member_id": member_id}
     response = query_data(query, parameters)
     if response["result"]==False:

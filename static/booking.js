@@ -283,7 +283,6 @@ TPDirect.card.setup({
         endIndex: 11
     }
 });
-TPDirect.ccv.setupCardType(TPDirect.CardType.UNKNOWN);
 
 window.addEventListener("click", (event)=>{
     if(event.target.id==="cancel"){

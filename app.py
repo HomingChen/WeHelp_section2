@@ -24,9 +24,12 @@ def booking():
 	return render_template("booking.html")
 @app.route("/thankyou")
 def thankyou():
-	orderNumber = request.args.get("number")
-	responseData = getPaymentResultByOrderID(orderNumber)[0]
-	return render_template("thankyou.html", data=responseData)
+	try:
+		orderNumber = request.args.get("number")
+		responseData = getPaymentResultByOrderID(orderNumber)[0]
+		return render_template("thankyou.html", data=responseData)
+	except:
+		return render_template("index.html")
 
 # APIs
 @app.route("/api/attractions")
@@ -140,11 +143,11 @@ def getOrderData():
 		if memberData[0]["data"]==None:
 			return {"error": True, "message": "未登入系統，拒絕存取"}, 403
 		else:
-			orderData = sql.get_valid_orders_by_member_id(memberData[0]["data"]["id"])
-			if orderData["data"][0]["pay_status"]==0:
-				redirectUrl = "/thankyou?number=" + str(orderData["data"][0]["order_id"])
-				return redirect(url_for("thankyou", number=orderData["data"][0]["order_id"]))
-			elif orderData["result"]==True:
+			orderData = sql.get_last_unpaid_order_by_member_id(memberData[0]["data"]["id"])
+			# if orderData["data"][0]["pay_status"]==0:
+			# 	redirectUrl = "/thankyou?number=" + str(orderData["data"][0]["order_id"])
+			# 	return redirect(url_for("thankyou", number=orderData["data"][0]["order_id"]))
+			if orderData["result"]==True:
 				data = {
 					"attraction": {
 						"id": orderData["data"][0]["attrac_id"],
