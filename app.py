@@ -279,7 +279,7 @@ def payOrder():
 			if False in checkContact:
 				return {"error": True, "message": "訂單建立失敗，輸入不正確或其他原因"}, 400
 			else:
-				orderID = sql.get_valid_orders_by_member_id(memberData[0]["data"]["id"])["data"][0]["order_id"]
+				orderID = sql.get_last_unpaid_order_by_member_id(memberData[0]["data"]["id"])["data"][0]["order_id"]
 				paymentResult = isPaymentValid(orderData)
 				if paymentResult["result"]==True:
 					isContactDuplicated = sql.is_contact_info_duplicated(contactData)
