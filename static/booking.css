@@ -160,16 +160,15 @@ form div div{
 }
 form div div label{
     width: 81px;
-    height: 24px;
+    height: 16px;
     font-family: 'Noto Sans TC';
     font-style: normal;
     font-weight: 500;
     font-size: 16px;
     line-height: 13px;
-    align-items: center;
     color: #666666;
     margin: 0px;
-    padding: 0px;
+    padding: 12px 0px;
 }
 form div div > input{
     width: 180px;
@@ -185,6 +184,10 @@ form div div > input{
     border: 1px solid #E8E8E8;
     border-radius: 5px;
     padding: 10px;
+}
+form div div > input:invalid{
+    color: red;
+    border: 2px solid red;
 }
 form div div > span{
     display: inline-block;
@@ -266,6 +269,10 @@ form div#submitPayment button{
     border-radius: 5px;
     background: #448899;
 }
+form div#submitPayment button:hover{
+    background: #66AABB;
+    cursor: pointer;
+}
 .mainContent > div#noOrder{
     grid-area: order;
     font-family: 'Noto Sans TC';
@@ -275,6 +282,26 @@ form div#submitPayment button{
     line-height: 13px;
     color: #666666;
     margin: 35px 0px 40px 100px;
+}
+form div#paymentInfo > div{
+    display: flex;
+    flex-direction: row;
+}
+.tpfield{
+    width: 180px;
+    height: 18px;
+    border: 1px solid #E8E8E8;
+    border-radius: 5px;
+    margin: 0;
+    padding: 10px;
+    font-family: 'Noto Sans TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 13px;
+}
+.tappay-field-focus{
+    border: 2px solid #000000;
 }
 @media(max-width:1200px){
     .mainContent{
